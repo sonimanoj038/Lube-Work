@@ -23,7 +23,7 @@ class EditCProfile2 extends React.Component{
            id:[],
             token:'',
             profileData:{},
-            visible:false
+            visible:true
 
 
         }     
@@ -32,6 +32,7 @@ validateInput = ()=>{
 return true
 }
   setAvailability(stateValue, key, field) {
+    console.log(stateValue)
         var timing = [...this.state.timing];
         if (field == "day") {
             timing[key].checked = !stateValue;
@@ -39,34 +40,23 @@ return true
         
         if (field == "start_time") {
            timing[key].start_display_time = stateValue;
-           timing[key].start_time = this.getTwentyFourHourTime(stateValue);
+           timing[key].start_time = stateValue;
         }
         if (field == "end_time") {
            timing[key].end_display_time = stateValue;
-           timing[key].end_time = this.getTwentyFourHourTime(stateValue);
+           timing[key].end_time = stateValue;
         }
         console.log(timing[key])
         this.setState({timing})
         // this.forceUpdate()
     }
 
-    getTwentyFourHourTime(amPmString) { 
-        var d = new Date("1/1/2013 " + amPmString); 
-        return (d.getHours()<10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes()<10 ? '0' : '') + d.getMinutes();
-    }
-
-    getDisplayDate = (date) => {
-        var format = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false })
-        console.log("format: ",format);
-        return format;
-        
-    }
 
 componentDidMount = async () => {
   let profileData = this.props.navigation.state.params.data
    AsyncStorage.getItem("user_info").then((value) =>{
      const mydata = JSON.parse(value)
-        this.setState({id:mydata.id,profileData:profileData,token:mydata.token,timing:profileData.timing})
+        this.setState({id:mydata.id,profileData:profileData,token:mydata.token,timing:profileData.timing,visible:false})
     })
 }
  profileSubmit=()=>{
@@ -99,10 +89,6 @@ componentDidMount = async () => {
       })
   }
 }
-
-
-
-
     printAvailability() {
         return this.state.timing.map((item, key) => {
             var checkStatus = this.state.timing[key].checked;
@@ -135,7 +121,7 @@ componentDidMount = async () => {
                             format='hh:mm '
                             confirmBtnText="Confirm"
                             cancelBtnText="Cancel"
-                            
+                            local = "en_GB"
                             onDateChange={(date) => { this.setAvailability(date, key, 'start_time') }}
                             iconComponent={
                                 <Icon
@@ -193,8 +179,8 @@ componentDidMount = async () => {
                  leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25}}/>}
                  centerComponent={{ text: 'Edit Your Profile', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  rightComponent={ <View style = {{flexDirection:'row'}}>
-                     <Icon name='ios-create'  style={{color:'white',fontSize:25,marginHorizontal:5}}/>
-                 <Icon name='md-menu'  style={{color:'white',fontSize:25,}}/>
+                     {/* <Icon name='ios-create'  style={{color:'white',fontSize:25,marginHorizontal:5}}/> */}
+                 <Icon name='md-menu'  style={{color:'white',fontSize:25,right:10}}/>
                  </View>
                 }
                  containerStyle={{

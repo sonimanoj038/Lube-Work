@@ -8,6 +8,7 @@ import { Right, Left, Footer,Body,Item} from 'native-base';
 import * as API from '../../api/index';
 import ImagePicker from 'react-native-image-picker';
 import AsyncStorage from '@react-native-community/async-storage';
+import Loader from '../../common/components/Loader';
 const width = Dimensions.get('window').width;
 const height =Dimensions.get('window').height;
 
@@ -20,7 +21,7 @@ class EditCProfile extends React.Component{
         this.state = {  
             password:'',
             cpassword:'',
-          visible:false,
+          visible:true,
           clogo:[],
           cphoto:[],
           serverphoto:'',
@@ -91,7 +92,7 @@ return false;
 }
 else
 // this.props.navigation.navigate('Profile2')
-this.setState({visible:true,disabled:false})
+this.setState({visible:false,disabled:false})
 return true;
 }
  
@@ -213,7 +214,10 @@ return true;
        
 }
     render(){
+if(this.state.visible){
 
+  return<Loader visible ={this.state.visible}/>
+}
         return(
              <ImageBackground source = {require('../../img/loginback.png')} style = {{flex:1}}>
                 <Header

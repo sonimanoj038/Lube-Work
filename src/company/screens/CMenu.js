@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Image, StatusBar ,Text,StyleSheet,FlatList,ImageBackground,ToastAndroid,Dimensions,TouchableOpacity,Modal} from 'react-native';
 import { Avatar,Input,Lebal,Button ,CheckBox,Header} from 'react-native-elements';
-import TextField from '../../common/components/input'
-import MyButton from '../../common/components/Button'
-import LinearGradient from 'react-native-linear-gradient';
 
+import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from '@react-native-community/async-storage';
+import * as API from '../../api/index';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Right, Left, Footer,Body,Item} from 'native-base';
 import ImagePicker from 'react-native-image-picker';
@@ -17,41 +17,13 @@ class CMenu extends React.Component{
         super(props);
         
         this.state = {  
-            password:'',
-            cpassword:'',
+          id:'',
           loading:true,
           clogo:'',
-          cname:'',
-          cmobile:'',
-          cemail:'',
-          tin:'',
-          cid:'',
-          cperson:'',
-          Vehicles:'',
-          caddress:'',
-          count:1,
-          isVisible:false
+          isVisible:false,
+          token:""
         }     
-    }
-validateInput = ()=>{
-const {password}  = this.state ;
-const {cpassword}  = this.state ;
-if(password ===""){
- this.showToastWithGravity("Enter new password")
-return false;
-}
-else if(cpassword ===""){
- this.showToastWithGravity("Enter confirm new password")
-return false;
-}
-else if(cpassword !=password){
- this.showToastWithGravity("Password not matched")
-return false;
-}
-else
-this.setState({loading:true,disabled:false})
-return true;
-}
+      }
   showToastWithGravity = (msg) => {
     ToastAndroid.showWithGravityAndOffset(
       msg,
@@ -65,6 +37,15 @@ return true;
       ToastAndroid.CENTER
     );
   };
+
+  componentDidMount = async () => {
+ 
+    AsyncStorage.getItem("user_info").then((value) =>{
+      const mydata = JSON.parse(value)
+         this.setState({id:mydata.id,token:mydata.token})
+ console.warn(mydata.id)
+     })
+ }
   takePicture() {
     const options = {
       title: 'Select Image',
@@ -91,54 +72,6 @@ return true;
     });
   }
 
-  getVehicles=()=>{
-      
-let mycount = this.state.count +1
-
-for(let i = 0;i<=2;i++){
- return(<View  key = { i }>
-<Item style ={{flexDirection:'row',borderColor: 'transparent',width:'100%'}}>
- <Left>
-    <Input
-      onChangeText={bname => this.setState({bname})}
-      placeholder ='Brand Name'
-      inputStyle={{color:'#242424',fontSize:15,fontWeight:'bold',padding: 0}}
-      inputContainerStyle = {{borderBottomColor:'#2aabe4',padding: 0}}
-   />
- </Left>
-     <Right>
-     <Input
-      onChangeText={ctype => this.setState({ctype})}
-      placeholder ='Catogory Type'
-      inputStyle={{color:'#242424',fontSize:15,fontWeight:'bold',padding: 0}}
-      inputContainerStyle = {{borderBottomColor:'#2aabe4',padding: 0}}
-     />
-    </Right>
-</Item> 
-<Text></Text> 
-<Item style ={{flexDirection:'row',borderColor: 'transparent',width:'100%'}}>
- <Left>
-    <Input
-      onChangeText={vin => this.setState({vin})}
-      placeholder ='VIN No'
-      inputStyle={{color:'#242424',fontSize:15,fontWeight:'bold',padding: 0}}
-      inputContainerStyle = {{borderBottomColor:'#2aabe4',padding: 0}}
-   />
- </Left>
-     <Right>
-     <Input
-      onChangeText={vehicleno => this.setState({vehicleno})}
-      placeholder ='Vehicle No'
-      inputStyle={{color:'#242424',fontSize:15,fontWeight:'bold',padding: 0}}
-      inputContainerStyle = {{borderBottomColor:'#2aabe4',padding: 0}}
-     />
-    </Right>
-</Item> 
-</View>)
-
-}
-     
-  }
   openMenu = (item)=>{
     if(item.id ==='5'){
       this.props.navigation.navigate('ChangePass')
@@ -149,6 +82,23 @@ for(let i = 0;i<=2;i++){
       
     }
        }
+
+       logOut=()=>{
+        const mydata = this.state
+         const data = { 
+            id:mydata.id,
+            token:mydata.token
+            }
+        API.Logout(data)
+         .then(res => {
+           console.warn('logindetail',res);
+           if(res.status ==='Success'){
+             this.setState({isVisible:false})
+           this.props.navigation.navigate('Login')
+           }
+        })
+  
+  }
     render(){
 const data = [{"id":"1","path":require('../../img/Service.png'),"name":'Service Request'},
 {"id":"2","path":require('../../img/Notifications.png'),"name":"Notifications"},

@@ -19,6 +19,10 @@ class EMenu extends React.Component{
         
         this.state = {  
            id:'',
+         loading:true,
+         clogo:'',
+         isVisible:false,
+         token:""
         }     
     }
 
@@ -50,21 +54,18 @@ else if(item.id ==='5'){
    }
   
    logOut=()=>{
-
       const mydata = this.state
        const data = { 
           id:mydata.id,
+          token:mydata.token
           }
-     
-      API.changePassword(data)
+      API.Logout(data)
        .then(res => {
          console.warn('logindetail',res);
          if(res.status ==='Success'){
-
-              this.props.navigation.navigate('Login')
+           this.setState({isVisible:false})
+         this.props.navigation.navigate('Login')
          }
-         
-        
       })
 
 }
@@ -120,7 +121,7 @@ const data = [{"id":"1","path":require('../../img/Employees.png'),"name":'Employ
           <View style={styles.MainContainer}>
 
 
-        <TouchableOpacity  onPress = {()=> this.props.navigation.navigate('Login')}>
+        <TouchableOpacity  onPress = {this.logOut}>
 
             <LinearGradient  colors={['#1282c1', '#01c0dc']} style={styles.LinearGradientStyle} >
 

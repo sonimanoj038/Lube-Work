@@ -3,7 +3,10 @@ import { View, Image, StatusBar ,Text,StyleSheet,ImageBackground,ToastAndroid,Di
 import { Avatar,Input,Lebal,Button ,CheckBox} from 'react-native-elements';
 import TextField from './components/input'
 import MyButton from './components/Button'
+import Loader from './components/Loader'
 import Icon from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-community/async-storage';
+import * as API from '../api/index';
 const width = Dimensions.get('window').width;
 const height =Dimensions.get('window').height;
 
@@ -14,7 +17,9 @@ class ForgotPassword extends React.Component{
         
         this.state = {  
             email:'',
-          loading:true
+          visible:false,
+          id:'',
+          token:''
         }     
     }
 validateInput = ()=>{
@@ -24,8 +29,8 @@ if(email ===""){
 return false;
 }
 else
-this.props.navigation.navigate('EnterOTP')
-this.setState({loading:true,disabled:false})
+
+this.setState({visible:true,disabled:false})
 return true;
 }
   showToastWithGravity = (msg) => {
@@ -42,11 +47,43 @@ return true;
     );
   };
  
+  componentDidMount = async () => {
+ 
+    AsyncStorage.getItem("user_info").then((value) =>{
+      const mydata = JSON.parse(value)
+         this.setState({id:mydata.id,token:mydata.token})
+ console.warn(mydata.id)
+     })
+ }
+
+  ForgotPassword=()=>{
+    if(this.validateInput()){
+    const mydata = this.state
+     const data = { 
+        email:mydata.email,
+        token:mydata.token
+        }
+    API.ForgotPassword(data)
+     .then(res => {
+       console.warn('logindetail',res);
+       this.setState({visible:false})
+       if(res.status ==='Success'){
+         
+         this.props.navigation.navigate('EnterOTP',{id:res.id})
+       }
+       else{
+
+        this.showToastWithGravity('Something went wrong/Invalid Email')
+       }
+    })
+  }
+}
     render(){
 
         return(
           <ImageBackground source = {require('../img/loginback.png')} style = {{flex:1}}>
           <StatusBar backgroundColor="#2aabe4" barStyle="light-content" />
+          <Loader visible ={this.state.visible}/>
           <View style = {{flex:1.2,alignItems:'center',PaddingHorizontal:10,justifyContent:'space-evenly' }}>
  <Image  source = {require('../img/logo.png')}  style = {{
   resizeMode:'contain'}}/>
@@ -68,7 +105,7 @@ placeholder ='EMAIL'
 <Text></Text>
 <MyButton
   title="SUBMIT"
-  onPress = {this.validateInput}
+  onPress = {this.ForgotPassword}
 />
  </View>
  </ImageBackground>   

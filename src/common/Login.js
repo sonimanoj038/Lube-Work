@@ -19,9 +19,10 @@ class Login extends React.Component{
           userError:'' ,
           passError:'',
           user:'',
-          password:'5eb54a7c8e3bd',
+          password:'',
           checked:true,
-          visible:false
+          visible:false,
+          checked:false
         }     
     }
 validateInput = ()=>{
@@ -41,7 +42,7 @@ else if (password ==="")
 
 
 else
-this.setState({visible:true,disabled:false})
+this.setState({disabled:false})
 return true;
 }
   showToastWithGravity = (msg) => {
@@ -57,18 +58,25 @@ return true;
       ToastAndroid.CENTER
     );
   };
- 
+  componentDidMount = async () => {
+   
+     await AsyncStorage.getItem("userSave").then((value) =>{
+       const mydata = JSON.parse(value)
+       console.warn(mydata)
+          this.setState({user:mydata.user,password:mydata.pass,checked:mydata.visible})
+      })
+  }
   signinSimple=()=>{
   if(this.validateInput()){
+    this.setState({visible:true})
       const mydata = this.state
       const data = {username:mydata.user,password:mydata.password}
-     
       API.login(data)
        .then(res => {
-         console.warn('logindetail',res);
+         
          this.setState({visible:false})
 
-         console.warn(res.status)
+     
         if(res.error===undefined){
           if (res.status ==="Success") {
            let response = res['data']
@@ -79,16 +87,14 @@ return true;
               'role':response.role,
               'token':response.token
             } 
-            console.warn(response.token);
             
+            this.setState({user:"",password:""})
             AsyncStorage.setItem('user_info', JSON.stringify(userInfo));
             let profileStatus = response['details']
             console.warn(profileStatus)
            if(response.role ==='1'){
            if( profileStatus.length<1){
             this.props.navigation.navigate('Profile',{data:userInfo})
-         
-
            }else
            {
             this.props.navigation.navigate('EMenu')
@@ -97,6 +103,9 @@ return true;
           } else {
             alert("error")
           }
+          }else{
+
+            this.showToastWithGravity(res.msg)
           }
         }
          else {
@@ -108,6 +117,21 @@ return true;
   }
 }
 
+rememberPassword =async ()=>{
+  if(this.validateInput()){
+  await this.setState({checked:!this.state.checked})
+  if(this.state.checked){
+  
+let data = {user:this.state.user,pass:this.state.password,visible:this.state.checked}
+    AsyncStorage.setItem('userSave',JSON.stringify(data));
+   console.warn("rember" ,data)
+  }
+  else{
+
+    await AsyncStorage.removeItem('userSave');
+  }
+}
+}
 
     render(){
 
@@ -126,13 +150,17 @@ return true;
  <View style = {{flex:1.1,backgroundColor:'transparent',margin:30}}>
 
 <TextField
+label = "COMPONAY ID/EMPLOYEE ID"
+value = {this.state.user}
 onChangeText={user => this.setState({user})}
 placeholder ='COMPONAY ID/EMPLOYEE ID'
    />
 <Text></Text>
 <TextField
+label = "PASSWORD"
 onChangeText={password => this.setState({password})}
 secureTextEntry={true}
+value = {this.state.password}
 placeholder ="PASSWORD"
 maxLength={10}
 
@@ -140,11 +168,18 @@ maxLength={10}
 <Text></Text>
 <View style = {{flexDirection:'row',justifyContent:'space-between'}}>
 <View style = {{flexDirection:'row'}}>
-<CheckBox 
-  checked={this.state.checked}
-  containerStyle = {{padding:0,alignItems:'flex-start'}}
-  size = {18}
-/>
+<CheckBox
+     containerStyle={{padding:0,borderWidth:0,marginHorizontal:0,backgroundColor:'transparent'}}
+    
+      checked={this.state.checked}
+      uncheckedColor = "black"
+      checkedColor="#2aabe4"
+      size = {15}
+     
+      checkedIcon='check-square'
+      uncheckedIcon = 'check-square'
+      onPress={this.rememberPassword}
+                        />
 <Text style = {{fontSize:12,color:'#373737',paddingVertical:5}}>
 Remember Me
 </Text>

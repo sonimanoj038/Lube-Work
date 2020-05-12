@@ -4,6 +4,9 @@ import { Avatar,Input,Lebal,Button ,CheckBox} from 'react-native-elements';
 import TextField from './components/input'
 import MyButton from './components/Button'
 import Icon from 'react-native-vector-icons/Ionicons';
+import Loader from './components/Loader'
+import AsyncStorage from '@react-native-community/async-storage';
+import * as API from '../api/index';
 const width = Dimensions.get('window').width;
 const height =Dimensions.get('window').height;
 
@@ -15,7 +18,11 @@ class NewPassSet extends React.Component{
         this.state = {  
             password:'',
             cpassword:'',
-          loading:true
+          visible:false,
+          id:'',
+          token:'',
+          otp:''
+
         }     
     }
 validateInput = ()=>{
@@ -34,8 +41,8 @@ else if(cpassword !=password){
 return false;
 }
 else
-this.props.navigation.navigate('Login')
-this.setState({loading:true,disabled:false})
+
+this.setState({visible:true,disabled:false})
 return true;
 }
   showToastWithGravity = (msg) => {
@@ -52,12 +59,44 @@ return true;
     );
   };
  
+  componentDidMount = async () => {
+ let otp = this.props.navigation.state.params.otp
+    AsyncStorage.getItem("user_info").then((value) =>{
+      const mydata = JSON.parse(value)
+         this.setState({id:mydata.id,token:mydata.token,otp:otp})
+ console.warn(mydata.id)
+     })
+ }
+  NewPassword=()=>{
+   if(this.validateInput()){
+       const mydata = this.state
+        const data = { 
+           id:mydata.id,
+            password:mydata.password,
+            cpassword:mydata.cpassword,
+            token:mydata.token,
+            otp:mydata.otp
+            
+           
+           }
+      
+       API.NewPassword(data)
+        .then(res => {
+          console.warn('logindetail',res);
+          this.setState({visible:false})
+          this.props.navigation.navigate('Login')
+         
+       })
+   }
+ }
+ 
     render(){
 
         return(
           <ImageBackground source = {require('../img/loginback.png')} style = {{flex:1}}>
           <StatusBar backgroundColor="#2aabe4" barStyle="light-content" />
           <View style = {{flex:1,alignItems:'center',PaddingHorizontal:10,justifyContent:'space-evenly' }}>
+          <Loader visible ={this.state.visible}/>
  <Image  source = {require('../img/logo.png')}  style = {{
   resizeMode:'contain'}}/>
   <Text style = {{fontSize:24,color:'#f1f1f1',fontWeight:'bold',}}>
@@ -82,7 +121,7 @@ secureTextEntry={true}
    <Text></Text>
 <MyButton
   title="UPDATE"
-  onPress = {this.validateInput}
+  onPress = {this.NewPassword}
 />
  </View>
  </ImageBackground>   

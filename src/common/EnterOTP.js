@@ -3,7 +3,9 @@ import { View, Image, StatusBar ,Text,StyleSheet,ImageBackground,ToastAndroid,Di
 import { Avatar,Input,Lebal,Button ,CheckBox} from 'react-native-elements';
 import TextField from './components/input'
 import MyButton from './components/Button'
-import Icon from 'react-native-vector-icons/Ionicons';
+import Loader from './components/Loader'
+import AsyncStorage from '@react-native-community/async-storage';
+import * as API from '../api/index';
 const width = Dimensions.get('window').width;
 const height =Dimensions.get('window').height;
 
@@ -13,8 +15,10 @@ class EnterOTP extends React.Component{
         super(props);
         
         this.state = {  
-            otp:'',
-          loading:true
+            otp:null,
+          visible:false,
+          token:'',
+          id:''
         }     
     }
 validateInput = ()=>{
@@ -25,8 +29,8 @@ if(otp ===""){
 return false;
 }
 else
-this.props.navigation.navigate('NewPassSet')
-this.setState({loading:true,disabled:false})
+
+this.setState({visible:true,disabled:false})
 return true;
 }
   showToastWithGravity = (msg) => {
@@ -43,12 +47,46 @@ return true;
     );
   };
  
+  componentDidMount = async () => {
+ 
+    AsyncStorage.getItem("user_info").then((value) =>{
+      const mydata = JSON.parse(value)
+         this.setState({id:mydata.id,token:mydata.token})
+ console.warn(mydata.id)
+     })
+ }
+
+  VerifyOtp=()=>{
+    if(this.validateInput()){
+    const mydata = this.state
+     const data = { 
+        otp:mydata.otp,
+        token:mydata.token,
+        id:mydata.id
+        }
+    API.VerifyOtp(data)
+     .then(res => {
+       console.warn('logindetail',res);
+       this.setState({visible:false})
+       if(res.status ==='Success'){
+      
+         this.props.navigation.navigate('NewPassSet',{otp:mydata.otp})
+       }
+       else{
+        this.showToastWithGravity(res.msg)
+       }
+
+    })
+  }
+}
+ 
     render(){
 
         return(
           <ImageBackground source = {require('../img/loginback.png')} style = {{flex:1}}>
           <StatusBar backgroundColor="#2aabe4" barStyle="light-content" />
           <View style = {{flex:1.1,alignItems:'center',PaddingHorizontal:10,justifyContent:'space-evenly' }}>
+          <Loader visible ={this.state.visible}/>
  <Image  source = {require('../img/logo.png')}  style = {{
   resizeMode:'contain'}}/>
   <Text style = {{fontSize:24,color:'#f1f1f1',fontWeight:'bold',}}>
@@ -73,7 +111,7 @@ OTP has been sent to your email
    <Text></Text>
 <MyButton
   title="SUBMIT"
-  onPress = {this.validateInput}
+  onPress = {this.VerifyOtp}
 />
  </View>
  </ImageBackground>   

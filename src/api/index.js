@@ -27,8 +27,7 @@ export const changePassword= (data) => {
     formdata.append("OldPassword",data.OldPassword);
     formdata.append("Password",data.password);
       formdata.append("ConfirmPassword",data.cpassword);
-          formdata.append("id",data.id);
-          
+          formdata.append("id",data.id); 
 	const url = `${BaseUrl}changePassword`;
 	return fetch(url, {
         method: 'POST',
@@ -41,6 +40,7 @@ export const changePassword= (data) => {
 	.then(res => res.json())
 	.catch(e => console.log(e));
 }
+
 export const submitProfile= (data) => {
     let formdata = new FormData();
     formdata.append("timing",JSON.stringify(timing))
@@ -136,4 +136,72 @@ export const EditCProfile= (data) => {
 	})
 	.then(res => res.json())
 	.catch(e => console.log(e));
+}
+
+export const Logout= (data) => {
+  let formdata = new FormData();
+  formdata.append("id",data.id); 
+const url = `${BaseUrl}logout`;
+return fetch(url, {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
+}
+
+export const ForgotPassword= (data) => {
+  let formdata = new FormData();
+  formdata.append("Email",data.email); 
+const url = `${BaseUrl}forgotPassword`;
+return fetch(url, {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
+}
+
+export const VerifyOtp= (data) => {
+  let formdata = new FormData();
+  formdata.append("OTP",data.otp); 
+  formdata.append("id",data.id); 
+const url = `${BaseUrl}verifyOTP`;
+return fetch(url, {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
+}
+
+export const NewPassword= (data) => { 
+  let formdata = new FormData();
+  formdata.append("Password",data.password);
+    formdata.append("ConfirmPassword",data.cpassword);
+    formdata.append("OTP",data.otp);
+        formdata.append("id",data.id); 
+const url = `${BaseUrl}resetForgotPassword`;
+return fetch(url, {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
 }
