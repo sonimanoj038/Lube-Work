@@ -88,8 +88,9 @@ return true;
               'token':response.token
             } 
             
-            this.setState({user:"",password:""})
-            AsyncStorage.setItem('user_info', JSON.stringify(userInfo));
+            this.setState({user:"",password:""
+          })
+            AsyncStorage.setItem('user_info', JSON.stringify(userInfo  ));
             let profileStatus = response['details']
             console.warn(profileStatus)
            if(response.role ==='1'){

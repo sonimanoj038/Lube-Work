@@ -37,11 +37,11 @@ if(opassword ===""){
 return false;
 }
 else if(password ===""){
- this.showToastWithGravity("Enter New Password")
+ this.showToastWithGravity("Enter new Password")
 return false;
 }
 else if(cpassword ===""){
- this.showToastWithGravity("Enter Confirm Password")
+ this.showToastWithGravity("Enter Cnfirm Password")
 return false;
 }
 else if(cpassword !=password){
@@ -52,6 +52,7 @@ else
 this.setState({visible:true,disabled:false})
 return true;
 }
+
   showToastWithGravity = (msg) => {
     ToastAndroid.showWithGravityAndOffset(
       msg,

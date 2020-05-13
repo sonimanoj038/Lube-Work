@@ -105,6 +105,8 @@ componentDidMount = async () => {
                             checked={checkStatus}
                             uncheckedColor = "black"
                             checkedColor="#2aabe4"
+
+                            
                             size = {18}
                             checkedIcon='check-square'
                             uncheckedIcon = 'check-square'
