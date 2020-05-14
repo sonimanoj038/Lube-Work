@@ -114,7 +114,10 @@ return true;
     });
   }
 
-  
+  AddEmp = ()=>{
+
+    console.log("clciekd")
+  }
     render(){
 
         return(
@@ -256,7 +259,7 @@ return true;
      />
   <Text></Text>
    <Text></Text>
-   <MyButton title="ADD" onPress = {this.validateInput}/>
+   <MyButton title="ADD" onPress = {this.addEmp}/>
  </View>
  </ImageBackground>   
         )}}
