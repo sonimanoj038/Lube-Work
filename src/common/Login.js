@@ -22,7 +22,8 @@ class Login extends React.Component{
           password:'',
           checked:true,
           visible:false,
-          checked:false
+          checked:false,
+          disabled:false
         }     
     }
 validateInput = ()=>{
@@ -39,10 +40,8 @@ else if (password ==="")
   this.showToastWithGravity("Enter your Password")
   return false;
 }
-
-
 else
-this.setState({disabled:false})
+this.setState({disabled:true,visible:true})
 return true;
 }
   showToastWithGravity = (msg) => {
@@ -68,24 +67,28 @@ return true;
   }
   signinSimple=()=>{
   if(this.validateInput()){
-    this.setState({visible:true})
+    // this.setState({visible:true})
       const mydata = this.state
       const data = {username:mydata.user,password:mydata.password}
       API.login(data)
        .then(res => {
+        console.warn("my final " + JSON.stringify(res) );
          
          this.setState({visible:false})
 
      
         if(res.error===undefined){
           if (res.status ==="Success") {
+console.warn("fsdfdsf" + res.avatar)
            let response = res['data']
             const userInfo = {
               'email':response.email,
               'username':response.username,
               'id':response.id,
               'role':response.role,
-              'token':response.token
+              'token':response.token,
+              'avatar':response.avatar,
+              'noEmp':response.noemployee
             } 
             
             this.setState({user:"",password:""
@@ -98,19 +101,20 @@ return true;
             this.props.navigation.navigate('Profile',{data:userInfo})
            }else
            {
-            this.props.navigation.navigate('EMenu')
+            this.props.navigation.navigate('Company')
            }
 
           } else {
             alert("error")
           }
           }else{
-
+            this.setState({loader:false,disabled:false,visible:false})
+            
             this.showToastWithGravity(res.msg)
           }
         }
          else {
-          this.setState({loader:false})
+         
           alert(res.error);
           console.log('error');
         }
@@ -194,6 +198,7 @@ Forgot Password?
 <Text></Text>
 <Text></Text>
 <MyButton
+disabled ={this.state.disabled}
   title="LOGIN"
   onPress = {this.signinSimple}
 />

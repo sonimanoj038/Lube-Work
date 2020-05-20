@@ -20,6 +20,7 @@ import EditCProfile2 from '../company/screens/EditCProfile2';
 import CMenu from '../company/screens/CMenu';
 import Employees1 from '../company/screens/Employees1';
 import Archive from '../company/screens/Archive';
+import CNotifications from '../company/screens/CNotifications';
 import Employees2 from '../company/screens/Employees2';
 import AddEmp from '../company/screens/AddEmp';
 import EditEmp from '../company/screens/EditEmp';
@@ -27,10 +28,9 @@ import Profile2 from '../company/screens/Profile2';
 import EProfile from '../employees/screens/EProfile';
 import EmpEditProfile from '../employees/screens/EmpEditProfile';
 import EMenu from '../employees/screens/EMenu';
-
- 
 import EProfile2 from '../employees/screens/Eprofile2';
-import { createAppContainer, } from 'react-navigation';
+
+import { createAppContainer,createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
 const transitionConfig = () => {
@@ -56,30 +56,17 @@ const transitionConfig = () => {
   }
 
   const LoginStack = createStackNavigator({
-    Splash: {
-      screen: Splash,
-    },
+    Splash:Splash,
     Login:Login,
     ForgotPassword:ForgotPassword ,
     NewPassSet:NewPassSet,
     EnterOTP:EnterOTP,
     Profile:Profile,
+    Profile2:Profile2,
     EProfile:EProfile,
     EProfile2:EProfile2,
-    Profile2:Profile2,
-    EMenu:EMenu,
-    CMenu:CMenu,
-    EmpEditProfile:EmpEditProfile,
-    Employees1:Employees1,
-    Employees2:Employees2,
-    AddEmp:AddEmp,
-    EditEmp:EditEmp,
-    ChangePass:ChangePass,
-    EditCProfile2:EditCProfile2,
-    EditCProfile:EditCProfile,
-    Archive:Archive
   },{
-     initialRouteName:'Splash',
+     initialRouteName:'Login',
              transitionConfig,
            headerMode: 'none',
             navigationOptions: {
@@ -88,7 +75,53 @@ const transitionConfig = () => {
             },
           })
 
-  const AppContainer = createAppContainer(LoginStack);
+
+          const CompanyStack = createStackNavigator({
+            EMenu:EMenu,
+            EmpEditProfile:EmpEditProfile,
+            Employees1:Employees1,
+            Employees2:Employees2,
+            AddEmp:AddEmp,
+            EditEmp:EditEmp,
+            ChangePass:ChangePass,
+            EditCProfile2:EditCProfile2,
+            EditCProfile:EditCProfile,
+            Archive:Archive,
+            CNotifications:CNotifications,
+          
+        
+          },{
+             initialRouteName:'EMenu',
+                     transitionConfig,
+                   headerMode: 'none',
+                    navigationOptions: {
+                        headerVisible: false,
+                        
+                    },
+                  })
+        
+        
+
+
+
+
+          const App = createSwitchNavigator({
+            Splash: {
+              screen: Splash,
+            },
+            LoginTack: {
+              screen: LoginStack,
+            },
+            Company: {
+              screen: CompanyStack,
+            },
+      
+           
+          }, {
+          initialRouteName:'Splash'
+          });
+          
+  const AppContainer = createAppContainer(App);
 
  export default class RoutingScreen extends React.Component {
     render() {return <AppContainer />

@@ -3,6 +3,7 @@ import { View, Image, StatusBar ,Text,StyleSheet,ImageBackground,ToastAndroid,Di
 import { Avatar,Input,Lebal,Button ,CheckBox,Header} from 'react-native-elements';
 import TextField from '../../common/components/input'
 import MyButton from '../../common/components/Button'
+import MyModal from '../../common/components/Modal'
 import Icon from 'react-native-vector-icons/Ionicons';
 import Loader from '../../common/components/Loader'
 import * as API from '../../api/index';
@@ -23,8 +24,8 @@ class EditCProfile2 extends React.Component{
            id:[],
             token:'',
             profileData:{},
-            visible:true
-
+            visible:true,
+            modalShow:false
 
         }     
     }
@@ -50,7 +51,6 @@ return true
         this.setState({timing})
         // this.forceUpdate()
     }
-
 
 componentDidMount = async () => {
   let profileData = this.props.navigation.state.params.data
@@ -82,12 +82,15 @@ componentDidMount = async () => {
      this.setState({visible:true})
       API.submitEditProfile(data)
        .then(res => {
-         this.setState({visible:false})
-         console.warn('logindetail',res);
-         this.props.navigation.navigate('EMenu')
-        
+         this.setState({visible:false,modalShow:true})
+         console.warn('Profiledata',res);
+         setTimeout(this.handleClose, 3000)    
       })
   }
+}
+handleClose = ()=>{
+  this.setState({modalShow:false})
+  this.props.navigation.navigate('EMenu')
 }
     printAvailability() {
         return this.state.timing.map((item, key) => {
@@ -96,7 +99,6 @@ componentDidMount = async () => {
             var endTime = this.state.timing[key].end_display_time;
             return (
                 <View key={key} style={[{flex:1,backgroundColor: '#fff',padding:5},styles.twoRow]}>
-            
                    <View style={styles.threeRow}>
                         <CheckBox
                             containerStyle={{padding:0,borderWidth:0,marginHorizontal:0,}}
@@ -105,8 +107,6 @@ componentDidMount = async () => {
                             checked={checkStatus}
                             uncheckedColor = "black"
                             checkedColor="#2aabe4"
-
-                            
                             size = {18}
                             checkedIcon='check-square'
                             uncheckedIcon = 'check-square'
@@ -178,7 +178,7 @@ componentDidMount = async () => {
              <ImageBackground source = {require('../../img/login_back.png')} style = {{flex:1}}>
             <Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
-                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25}}/>}
+                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}} onPress = {()=>this.props.navigation.goBack()}/>}
                  centerComponent={{ text: 'Edit Your Profile', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  rightComponent={ <View style = {{flexDirection:'row'}}>
                      {/* <Icon name='ios-create'  style={{color:'white',fontSize:25,marginHorizontal:5}}/> */}
@@ -192,7 +192,8 @@ componentDidMount = async () => {
                 }}
               />
                
-      <Loader visible ={this.state.visible}/>            
+      <Loader visible ={this.state.visible}/>   
+             
     <View style = {{flex:1,alignItems:'center',PaddingHorizontal:10,paddingVertical:20,}}>
 
   </View>
@@ -206,6 +207,7 @@ componentDidMount = async () => {
       <Text></Text>
    <MyButton title="SUBMIT" onPress = {this.profileSubmit}/>
  </View>
+  <MyModal visible = {this.state.modalShow} msg = "Updated Successfully"/> 
  </ImageBackground>   
         )}}
 

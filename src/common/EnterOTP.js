@@ -99,6 +99,7 @@ return true;
 onChangeText={otp => this.setState({otp})}
 placeholder ='ENTER OTP'
 secureTextEntry={true}
+keyboardType="numeric" maxLength={5}
 rightIcon = {
     <Text style = {{color:'#2aabe4',fontWeight:'bold',}}>RESEND?</Text>
 }

@@ -4,6 +4,9 @@ import { Avatar,Input,Lebal,Button ,CheckBox,Header} from 'react-native-elements
 import TextField from '../../common/components/input'
 import MyButton from '../../common/components/Button'
 import Icon from 'react-native-vector-icons/Ionicons';
+import Loader from '../../common/components/Loader'
+import AsyncStorage from '@react-native-community/async-storage';
+import * as API from '../../api/index';
 import { Right, Left, Footer,Body,Item} from 'native-base';
 import ImagePicker from 'react-native-image-picker';
 import LinearGradient from 'react-native-linear-gradient';
@@ -18,14 +21,17 @@ class AddEmp extends React.Component{
         this.state = {  
             epassword:'',
             ecpassword:'',
-          loading:true,
-          clogo:'',
+          visible:false,
+          clogo:[],
           ename:'',
           emobile:'',
           eemail:'',
           tin:'',
           eid:'',
-          isVisible:true
+          id:'',
+          token:'',
+          isVisible:false,
+
 
          
         }     
@@ -39,7 +45,7 @@ const {eemail}  = this.state ;
 const {eid}  = this.state ;
 const {clogo}  = this.state ;
 
-if(clogo ===""){
+if(clogo.length <1){
  this.showToastWithGravity("Upload Profile Image")
 return false;
 }
@@ -72,7 +78,7 @@ else if(ecpassword !=epassword){
 return false;
 }
 else
-this.setState({loading:true,disabled:false})
+this.setState({visible:true,disabled:false})
 return true;
 }
   showToastWithGravity = (msg) => {
@@ -108,15 +114,45 @@ return true;
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
-        const source = response.uri;
+        const source = response;
         this.setState({ clogo: source });
       }
     });
   }
 
-  AddEmp = ()=>{
+componentDidMount = async () => {
+   AsyncStorage.getItem("user_info").then((value) =>{
+     const mydata = JSON.parse(value)
+        this.setState({id:mydata.id,token:mydata.token})
+    })
+    console.warn('enter')
+}
 
-    console.log("clciekd")
+profileSubmit=()=>{
+  
+}
+  AddEmp = ()=>{
+if(this.validateInput()){
+      const mydata = this.state
+       const data = { clogo:mydata.clogo,
+          epassword:mydata.epassword,
+          ename:mydata.ename,
+          emobile:mydata.emobile,
+          eemail:mydata.eemail,                                               
+          eid:mydata.eid,
+          id:this.state.id,
+          token:this.state.token
+          
+          }
+     this.setState({visible:true})
+      API.AddEmp(data)
+       .then(res => {
+         this.setState({visible:false,isVisible:true})
+         console.warn('logindetail',res);
+           this.props.navigation.navigate('Employees2')
+      
+   })
+  }
   }
     render(){
 
@@ -124,7 +160,7 @@ return true;
              <ImageBackground source = {require('../../img/login_back.png')} style = {{flex:1}}>
                  <Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
-                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25}}/>}
+                   leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}}  onPress = {()=>this.props.navigation.goBack()}/>}
                  centerComponent={{ text: 'Add Employee', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  containerStyle={{
                  backgroundColor: '#2aabe4',
@@ -132,6 +168,7 @@ return true;
                  borderWidth:0,borderBottomColor:'#2aabe4'
                 }}
               />
+                    <Loader visible ={this.state.visible}/> 
                       <Modal transparent={true}
        visible={this.state.isVisible}
        onRequestClose={this.closeModal}>
@@ -144,7 +181,6 @@ return true;
             width: '90%',
             marginHorizontal:30,
             height: height/3,backgroundColor:'white',alignItems:'center',borderRadius:7,padding:20}}>
-      
       <Text style ={{textAlign:'center',alignItems:'center',alignSelf:'center',fontWeight:'bold',fontSize:20,color:'green'}}>Profile Updated Successfully!</Text>
      <Text></Text>
       <Text style = {{fontSize:15,color:'green',textAlign:'center',alignItems:'center',alignSelf:'center'}}>
@@ -152,20 +188,12 @@ return true;
           <Text></Text> 
           <Text></Text> 
           <View style={styles.MainContainer}>
-
-
         <TouchableOpacity >
 
             <LinearGradient  colors={['#1282c1', '#01c0dc']} style={styles.LinearGradientStyle} >
-
                   <Text style={styles.buttonText}> SEND LINK </Text>
-                  
             </LinearGradient>
-        
         </TouchableOpacity>
-
-
-
         <TouchableOpacity  onPress={()=>this.setState({isVisible:false})}>
 
             <LinearGradient 
@@ -196,7 +224,7 @@ return true;
               overlayContainerStyle={{ backgroundColor: '#FFF',borderColor: '#2aabe4', }}          
               rounded
               containerStyle={{ borderColor: '#2aabe4', borderWidth: 1, alignSelf: 'center',backgroundColor:'white'}}
-              source={this.state.clogo != '' ? { uri: this.state.clogo} : require('../../img/profile.png')}
+              source={this.state.clogo.length<1  ?  require('../../img/profile.png'):{ uri: this.state.clogo.uri}}
               imageProps={{ resizeMode: 'cover' ,borderColor: 'black'}}
               showEditButton
               iconStyle = {{backgroundColor:'#2aabe4'}}
@@ -259,7 +287,7 @@ return true;
      />
   <Text></Text>
    <Text></Text>
-   <MyButton title="ADD" onPress = {this.addEmp}/>
+   <MyButton title="ADD" onPress = {this.AddEmp }/>
  </View>
  </ImageBackground>   
         )}}

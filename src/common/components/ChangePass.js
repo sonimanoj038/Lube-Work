@@ -4,6 +4,7 @@ import { Avatar,Input,Lebal,Button ,CheckBox,Header} from 'react-native-elements
 import TextField from '../../common/components/input'
 import MyButton from '../../common/components/Button'
 import Loader from '../../common/components/Loader'
+import MyModal from '../../common/components/Modal'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Right, Left, Footer,Body,Item} from 'native-base';
 import ImagePicker from 'react-native-image-picker';
@@ -25,7 +26,8 @@ class ChangePass extends React.Component{
          opassword:'',
           isVisible:false,
           id:'',
-          token:''
+          token:'',
+          modalShow:false
         }     
     }
 validateInput = ()=>{
@@ -88,26 +90,32 @@ console.warn(mydata.id)
      
       API.changePassword(data)
        .then(res => {
-         console.warn('logindetail',res);
-         this.setState({visible:false})
-        
+         console.warn('logindetail',res)
+         if(res.status ==='Success'){
+          this.setState({modalShow:true,visible:false})
+          setTimeout(this.handleClose, 3000) 
+         }
+         else{
+          this.setState({visible:false})
+          this.showToastWithGravity(res.msg) 
+         }
+         
       })
+  }}
+  handleClose = ()=>{
+    this.setState({modalShow:false})
+    this.props.navigation.navigate('EMenu')
   }
-}
-
-
- 
     render(){
-
         return(
              <ImageBackground source = {require('../../img/login_back.png')} style = {{flex:1}}>
                  <Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
-                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25}}/>}
-                 centerComponent={{ text: 'Change Password', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
+                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}}  onPress = {()=>this.props.navigation.goBack()}/>}
+                 centerComponent={{ text: 'Change Password', style: { color: '#fff',fontWeight:'bold',fontSize:20 }}}
                  rightComponent={ <View style = {{flexDirection:'row'}}>
                      
-                 <Icon name='md-menu'  style={{color:'white',fontSize:25,right:20}} />
+                 {/* <Icon name='md-menu'  style={{color:'white',fontSize:25,right:20}} /> */}
                  </View>
                 }
                  containerStyle={{
@@ -117,23 +125,7 @@ console.warn(mydata.id)
                 }}
               />
                <Loader visible ={this.state.visible} />
-               <Modal transparent={true}
-       visible={this.state.isVisible}
-       onRequestClose={this.closeModal}>
-  <View style={{
-          flex: 1,
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
-    <View style={{
-            width: '90%',
-            marginHorizontal:20,
-            height: height/3.5,backgroundColor:'white',justifyContent:'center',borderRadius:7}}>
-      
-      <Text style ={{textAlign:'center',alignItems:'center',alignSelf:'center',fontWeight:'bold',fontSize:25,color:'green'}}>Profile Updated Successfully!</Text>
-    </View>
-  </View>
-</Modal>     
+               <MyModal visible = {this.state.modalShow} msg = "Password Updated Successfully"/> 
     <View style = {{flex:1,alignItems:'center',PaddingHorizontal:10,paddingVertical:30,marginBottom:-50}}>
 <Item  style ={{flexDirection:'row',borderColor: 'transparent',width:'100%',alignItems:'center',PaddingHorizontal:10,justifyContent:'space-evenly'}}>
 

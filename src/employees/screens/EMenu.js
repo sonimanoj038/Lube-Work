@@ -22,7 +22,9 @@ class EMenu extends React.Component{
          loading:true,
          clogo:'',
          isVisible:false,
-         token:""
+         token:"",
+         avatar:'',
+         noEmp:null
         }     
     }
 
@@ -42,7 +44,19 @@ class EMenu extends React.Component{
     
    openDetails = (item)=>{
 if(item.id ==='1'){
-  this.props.navigation.navigate('Employees1')
+  if(this.state.noEmp <1){
+    this.props.navigation.navigate('Employees1')
+  }
+  else{
+    this.props.navigation.navigate('Employees2')
+  }
+
+}
+else if(item.id ==='2'){
+  this.props.navigation.navigate('CNotifications')
+}
+else if (item.id ==='3'){
+  this.props.navigation.navigate('Archive')
 }
 else if(item.id ==='4'){
   this.props.navigation.navigate('ChangePass')  
@@ -64,7 +78,7 @@ else if(item.id ==='5'){
          console.warn('logindetail',res);
          if(res.status ==='Success'){
            this.setState({isVisible:false})
-         this.props.navigation.navigate('Login')
+         this.props.navigation.navigate('LoginTack')
          }
       })
 
@@ -73,8 +87,8 @@ componentDidMount = async () => {
  
    AsyncStorage.getItem("user_info").then((value) =>{
      const mydata = JSON.parse(value)
-        this.setState({id:mydata.id,token:mydata.token})
-console.warn(mydata.id)
+        this.setState({id:mydata.id,token:mydata.token,avatar:mydata.avatar,noEmp:mydata.noEmp})
+console.warn("dad" + mydata.avatar)
     })
 }
   
@@ -90,7 +104,7 @@ const data = [{"id":"1","path":require('../../img/Employees.png'),"name":'Employ
              <ImageBackground source = {require('../../img/back3.png')} style = {{flex:1}}>
                  <Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
-                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25}}/>}
+                //  leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25}}/>}
                  centerComponent={{ text: 'Menu Options', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  containerStyle={{
                  backgroundColor: '#2aabe4',
@@ -99,7 +113,7 @@ const data = [{"id":"1","path":require('../../img/Employees.png'),"name":'Employ
                 }}
               />
                
-               <Modal transparent={true}
+    <Modal transparent={true}
        visible={this.state.isVisible}
        onRequestClose={this.closeModal}>
   <View style={{
@@ -112,57 +126,41 @@ const data = [{"id":"1","path":require('../../img/Employees.png'),"name":'Employ
             marginHorizontal:30,
             height: height/3.5,backgroundColor:'white',alignItems:'center',borderRadius:7,padding:20}}>
       
-      
-     <Text></Text>
+         <Text></Text>
       <Text style = {{fontSize:23,color:'#272727',textAlign:'center',alignItems:'center',alignSelf:'center'}}>
               Are you sure  you want to logout?   </Text>
           <Text></Text> 
           <Text></Text> 
           <View style={styles.MainContainer}>
-
-
-        <TouchableOpacity  onPress = {this.logOut}>
-
+          <TouchableOpacity  onPress = {this.logOut}>
             <LinearGradient  colors={['#1282c1', '#01c0dc']} style={styles.LinearGradientStyle} >
-
-                  <Text style={styles.buttonText}>YES</Text>
-                  
+              <Text style={styles.buttonText}>YES</Text>   
             </LinearGradient>
-        
         </TouchableOpacity>
-
-
-
         <TouchableOpacity  onPress={()=>this.setState({isVisible:false})}>
-
             <LinearGradient 
             colors={['#b29d1c', '#d2b500']}
             style={styles.LinearGradientStyle}  
             start={{x: 0, y: 1}} 
             end={{x: 1, y: 0.9}}
             locations={[0, 0.3,]} >
-
-              <Text style={styles.buttonText}> NO</Text>
-                  
+              <Text style={styles.buttonText}> NO</Text>   
             </LinearGradient>
-        
         </TouchableOpacity>
-
       </View>      
     </View>
   </View>
 </Modal>
     <View style = {{flex:1,alignItems:'center',PaddingHorizontal:10,paddingVertical:30,marginBottom:-50}}>
 <Item  style ={{flexDirection:'row',borderColor: 'transparent',width:'100%',alignItems:'center',PaddingHorizontal:10,justifyContent:'space-evenly'}}>
-
-<View style ={{flexDirection:'column',marginTop:'4%'}}>
+<View style ={{flexDirection:'column',marginTop:'0.5%'}}>
 <Avatar
               size={130}
               onEditPress={()=> this.props.navigation.navigate('EditCProfile')}
               overlayContainerStyle={{ backgroundColor: '#FFF',borderColor: '#2aabe4', }}          
               rounded
               containerStyle={{ borderColor: '#2aabe4', borderWidth: 1, alignSelf: 'center',backgroundColor:'white'}}
-              source={this.state.clogo != '' ? { uri: this.state.clogo} : require('../../img/profile.png')}
+              source={this.state.avatar != '' ? { uri:"https://lubeatwork.markupdesigns.org/"+this.state.avatar} : require('../../img/profile.png')}
               imageProps={{ resizeMode: 'cover' ,borderColor: 'black'}}
               showEditButton
               iconStyle = {{backgroundColor:'#2aabe4'}}
@@ -175,11 +173,9 @@ const data = [{"id":"1","path":require('../../img/Employees.png'),"name":'Employ
   <View style = {{flex:3,backgroundColor:'transparent',margin:20,}}>
   <FlatList
           data={data}
-        
           renderItem={({ item }) => (
-            <View style={{ flex:1/2,height:150,margin:20 ,justifyContent: 'center',
+            <View style={{ flex:0.5,height:150,margin:10 ,justifyContent: "center",
             alignItems: 'center', backgroundColor:'white',borderColor:'grey',borderWidth:0.3,borderRadius:10}}>
-             
              <TouchableOpacity  onPress = {()=>this.openDetails(item)}>
              <Image style={styles.imageThumbnail2} source={item.path} />
              </TouchableOpacity>

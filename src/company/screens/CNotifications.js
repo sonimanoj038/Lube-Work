@@ -9,12 +9,16 @@ import AsyncStorage from '@react-native-community/async-storage';
 import * as API from '../../api/index';
 import DocumentPicker from 'react-native-document-picker';
 import LinearGradient from 'react-native-linear-gradient';
-import { Right, Left, Footer,Body,Item,Card,CardItem,Text, Thumbnail,List,ListItem} from 'native-base';
+import { Right, Left, Footer,Body,Item,Switch,Text, Thumbnail,List,ListItem} from 'native-base';
 import ImagePicker from 'react-native-image-picker';
 const width = Dimensions.get('window').width;
 const height =Dimensions.get('window').height;
 
-class  Archive extends React.Component{
+const data = [{"id":"1","msg":"my new meesages about query "},{"id":"2","msg":"processing your order "},{"id":"3","msg":"my new meesages about query "}
+,{"id":"4","msg":"how are you boy"},{"id":"5","msg":"my new meesages about query "}
+]
+
+class  CNotifications extends React.Component{
 
     constructor(props){
         super(props);
@@ -28,7 +32,8 @@ class  Archive extends React.Component{
           Empdata:{},
           token:'',
           id:'',
-          isVisible:false
+          isVisible:false,
+          isEnabled:false
         }     
     }
 
@@ -46,7 +51,7 @@ class  Archive extends React.Component{
     );
   };
   
-  getArchive = ()=>{
+  getNotifications = ()=>{
 
     const mydata = this.state
      const data = { 
@@ -54,18 +59,19 @@ class  Archive extends React.Component{
         token:mydata.token, 
         page:1
         }
-    API.getArchive(data)
+    API.getNotifications(data)
      .then(res => {
        console.warn('detail',res);
        const final = res['data']
-       this.setState({visible:false,data:final}) 
+       this.setState({visible:false,data:final})  
     })
 }
+
 componentDidMount = async () => {
    AsyncStorage.getItem("user_info").then((value) =>{
      const mydata = JSON.parse(value)
         this.setState({id:mydata.id,token:mydata.token})
-this.getArchive()
+this.getNotifications()
     })
 }
 
@@ -79,30 +85,9 @@ this.getArchive()
     />
   )
   
-
-BlockEmp = ()=>{
-const mydata = this.state.Empdata
-     const data = { 
-        id:this.state.id,
-        token:this.state.token, 
-        eid:mydata.id
-        }
-          this.setState({visible:true})
-    API.BlockEmp(data)
-     .then(res => {
-       console.warn('detail',res);
-       if(res.status ==='Success'){
-         this.setState({visible:false,msg:res.msg})
-          this.showToastWithGravity(res.msg)
-    this.getArchive()
-       }
-    })
-}
-  openDetails = (item)=>{  
-this.setState({isVisible:true,Empdata:item}) 
-}
-   
-  
+  toggleSwitch = ()=>{
+      this.setState({isEnabled:!this.state.isEnabled})
+  }
     render(){
       if(this.state.visible){
 
@@ -113,9 +98,16 @@ this.setState({isVisible:true,Empdata:item})
                  <Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
                  leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}} onPress = {()=>this.props.navigation.goBack()}/>}
-                 centerComponent={{ text: 'Archive', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
+                 centerComponent={{ text: 'Notifications', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  rightComponent={ <View style = {{flexDirection:'row'}}>
-                      <Icon name='ios-search'  style={{color:'white',fontSize:28,marginHorizontal:15}} />
+                       <Switch 
+                       trackColor={{ false: "#f1f1f1", true: "#f1f1f1" }}
+                       thumbColor={this.state.isEnabled ? "#2aabe4" : "#2aabe4"}
+                       ios_backgroundColor="#3e3e3e"
+                       style = {{right:10}}
+                       onValueChange={this.toggleSwitch}
+                       value={this.state.isEnabled}
+                       />
                      {/* <Icon name='ios-add'  style={{color:'white',fontSize:30,right:10}} onPress={()=>this.props.navigation.navigate('AddEmp')}/> */}
                  <Icon name='md-menu'  style={{color:'white',fontSize:30,right:5}} onPress={()=>this.props.navigation.navigate('EMenu')}/>
                  </View>
@@ -142,7 +134,7 @@ this.setState({isVisible:true,Empdata:item})
       
          <Text></Text>
       <Text style = {{fontSize:23,color:'#272727',textAlign:'center',alignItems:'center',alignSelf:'center'}}>
-              Are you sure you want to unblock the employee?   </Text>
+              Are you sure you want to stop notifications?   </Text>
           <Text></Text> 
           <Text></Text> 
           <View style={styles.MainContainer}>
@@ -167,39 +159,25 @@ this.setState({isVisible:true,Empdata:item})
 </Modal>
     <View style = {{flex:0.5,alignItems:'center',PaddingHorizontal:10,paddingVertical:30,marginBottom:-50}}>
   </View>
-  <View style = {{flex:3.2,backgroundColor:'white',borderWidth:0.5,borderColor:'grey',opacity:0.8}}>
+  <View style = {{flex:3.2}}>
      {this.state.data.length<1?<Text style = {{alignItems:'center',textAlign:'center',padding:20}}> 
      No Record Found
      </Text>:<FlatList
           data={this.state.data}
         showsHorizontalScrollIndicator ={false}
         showsVerticalScrollIndicator = {false}
-        ItemSeparatorComponent={this.renderSeparator}
-          renderItem={({ item }) => (
-            <List >
-            <ListItem noBorder avatar>
-              <Left>
-              <Thumbnail source={item.avatar ===null?require('../../img/profile.png') :{uri:"https://lubeatwork.markupdesigns.org/assets/employee/"+item.avatar} } />
-              </Left>
-              <Body>
-              <Text style = {{color:'#373737',fontSize:12}} >{item.username}</Text>
-              <Text style = {{color:'#373737',fontSize:12}} >{item.name}</Text>
-                <Text style = {{color:'#373737',fontSize:12}}>{item.email}</Text>
-                <Text style = {{color:'#373737',fontSize:12}}>{item.mobile}</Text>
-              </Body>
-              <Right>
-                <TouchableOpacity
-           onPress={()=>this.openDetails(item)}
-          style ={{width: 50,
-         height: 50,
-       borderRadius: 50/2,backgroundColor:'#2aabe4',alignItems:'center',justifyContent:'center'}}>
-<Icon name= {item.send_link ==='1'?'md-checkmark':item.send_link==='0'?'ios-mail':'md-eye-off'}  style={{color:'white',fontSize:25}}/>
-         </TouchableOpacity>
-              </Right>
+          renderItem={({ item ,index}) => (
+            <List style = {{backgroundColor:'transparent'}}>
+            <ListItem noBorder style = {{backgroundColor:index%2===0?'#fcfbfa':'#2aabe4',margin:10,borderRadius:8}}>
+              
+                <Text style = {{color:index%2===0?'#70685f':'white',fontSize:13,padding:8,textAlign:'justify',alignContent:'flex-start',justifyContent:'flex-start'}}>{item.msg}</Text>
+        
+             
             </ListItem>
            </List>
            )}
           keyExtractor={(item, index) => index.toString()}
+          style = {{margin:2}}
         /> }  
  </View>
  <View style = {{flex:0.8}}>
@@ -222,4 +200,4 @@ const styles = StyleSheet.create({
       },
 
   });
-export default Archive;
+export default CNotifications;

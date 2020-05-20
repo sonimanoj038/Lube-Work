@@ -2,8 +2,6 @@
 const BaseUrl = 'https://lubeatwork.markupdesigns.org/api/';
 
 
-export const imageUrl = 'http://test.bidraves.com:3000/';
-
 export const login= (data) => {
     let formdata = new FormData();
     formdata.append("username",data.username);
@@ -89,9 +87,6 @@ export const submitEditProfile= (data) => {
     formdata.append("vehicles", parseInt(data.Vehicles));
     formdata.append("address",data.caddress);
     formdata.append("contactperson",data.cperson);
-  
-   
- 
   if(data.clogo.length !=0){
        console.warn(data.clogo.length,data.cphoto.length);
    const newFile1 = {
@@ -198,6 +193,171 @@ return fetch(url, {
       method: 'POST',
       headers: {
        'Content-Type': 'multipart/form-data',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
+}
+
+export const UploadEmp= (data) => { 
+  console.warn("njk"+JSON.stringify(data))
+  let formdata = new FormData();
+  formdata.append('file',{uri:data.url , name: data.name, type: data.type});
+   formdata.append("id",data.id); 
+const url = `${BaseUrl}importEmployee`;
+return fetch(url, {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
+}
+
+export const GetEmp= (data) => { 
+  let formdata = new FormData();
+   formdata.append("id",data.id)
+   formdata.append("page",data.page)
+const url = `${BaseUrl}employeeList`;
+return fetch(url, {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
+}
+
+export const AddEmp= (data) => { 
+  let formdata = new FormData();
+    formdata.append("id",data.id);
+    formdata.append("employeeID",data.eid);
+    formdata.append("name",data.ename);
+    formdata.append("email",data.eemail);
+    formdata.append("mobile",data.emobile);
+    formdata.append("password",data.password);
+    formdata.append("confirmPassword",data.confirmPassword);
+    const newFile1 = {
+    uri:data.clogo.uri, type: data.clogo.type,
+    name:data.clogo.fileName
+  }  
+  formdata.append("avatar",newFile1);
+	const url = `${BaseUrl}addEmployee`;
+	return fetch(url,{
+        method: 'POST',
+        headers: {
+         'Content-Type': 'multipart/form-data',
+         'Accept': 'application/json',
+          'Apiauthorization':data.token,
+        },
+        body:formdata
+	})
+	.then(res => res.json())
+	.catch(e => console.log(e));
+}
+
+
+export const SendLink= (data) => { 
+  let formdata = new FormData();
+   formdata.append("id",data.id)
+   formdata.append("eid",data.eid)
+const url = `${BaseUrl}sendAppLink`;
+return fetch(url, {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
+}
+
+export const BlockEmp= (data) => { 
+  let formdata = new FormData();
+   formdata.append("id",data.id)
+   formdata.append("eid",data.eid)
+const url = `${BaseUrl}blockArchive`;
+return fetch(url, {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
+}
+
+
+export const getArchive= (data) => { 
+  let formdata = new FormData();
+   formdata.append("id",data.id)
+   formdata.append("page",data.page)
+const url = `${BaseUrl}archiveList`;
+return fetch(url, {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
+}
+
+export const getNotifications= (data) => { 
+  let formdata = new FormData();
+   formdata.append("id",data.id)
+   formdata.append("page",data.page)
+const url = `${BaseUrl}notification`;
+return fetch(url, {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
+}
+
+export const EditEmp= (data) => {
+ 
+  let formdata = new FormData();
+  formdata.append("id",data.id);
+  formdata.append("eid",data.empid);
+  formdata.append("name",data.ename);
+  formdata.append("email",data.eemail);
+  formdata.append("tmobile",data.emobile);
+  formdata.append("employeeID",data.eid);
+ 
+if(data.clogo.length !=0){
+    
+ const newFile1 = {
+  uri:data.clogo.uri, type: data.clogo.type,
+  name:data.clogo.fileName
+}
+formdata.append("avatar",newFile1);
+}
+const url = `${BaseUrl}editEmployee`;
+return fetch(url,{
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
+       'Accept': 'application/json',
         'Apiauthorization':data.token,
       },
       body:formdata

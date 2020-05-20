@@ -1,8 +1,9 @@
- import React from 'react';
+import React from 'react';
 import { View, Image, StatusBar ,Text,StyleSheet,ImageBackground,ToastAndroid,Dimensions,TouchableOpacity} from 'react-native';
 import { Avatar,Input,Lebal,Button ,CheckBox} from 'react-native-elements';
 import TextField from './components/input'
 import MyButton from './components/Button'
+import MyModal from './components/Modal'
 import Icon from 'react-native-vector-icons/Ionicons';
 import Loader from './components/Loader'
 import AsyncStorage from '@react-native-community/async-storage';
@@ -18,10 +19,12 @@ class NewPassSet extends React.Component{
         this.state = {  
             password:'',
             cpassword:'',
-          visible:false,
-          id:'',
-          token:'',
-          otp:''
+            visible:false,
+            id:'',
+            
+            token:'',
+            otp:'',
+            modalShow:false
 
         }     
     }
@@ -67,6 +70,7 @@ return true;
  console.warn(mydata.id)
      })
  }
+
   NewPassword=()=>{
    if(this.validateInput()){
        const mydata = this.state
@@ -76,33 +80,38 @@ return true;
             cpassword:mydata.cpassword,
             token:mydata.token,
             otp:mydata.otp
-            
-           
            }
       
        API.NewPassword(data)
         .then(res => {
-          console.warn('logindetail',res);
-          this.setState({visible:false})
-          this.props.navigation.navigate('Login')
-         
+          if(res.status ==='Success'){
+            this.setState({modalShow:true,visible:false})
+            setTimeout(this.handleClose, 3000) 
+           }
+           else{
+            this.setState({visible:false})
+            this.showToastWithGravity(res.msg) 
+           } 
        })
    }
  }
- 
-    render(){
 
+ handleClose = ()=>{
+  this.setState({modalShow:false})
+  this.props.navigation.navigate('Login')
+}
+    render(){
         return(
           <ImageBackground source = {require('../img/loginback.png')} style = {{flex:1}}>
           <StatusBar backgroundColor="#2aabe4" barStyle="light-content" />
           <View style = {{flex:1,alignItems:'center',PaddingHorizontal:10,justifyContent:'space-evenly' }}>
           <Loader visible ={this.state.visible}/>
+          <MyModal visible = {this.state.modalShow} msg = "Password Change Successfully"/> 
  <Image  source = {require('../img/logo.png')}  style = {{
   resizeMode:'contain'}}/>
   <Text style = {{fontSize:24,color:'#f1f1f1',fontWeight:'bold',}}>
  ENTER NEW PASSWORD
   </Text>
-
    </View>
  <View style = {{flex:1,backgroundColor:'transparent',margin:30}}>
 
@@ -125,10 +134,7 @@ secureTextEntry={true}
 />
  </View>
  </ImageBackground>   
-        )
-    }
-
-}
+        )}}
 
 const styles = StyleSheet.create({
     splash: {

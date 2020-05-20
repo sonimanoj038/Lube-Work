@@ -5,27 +5,31 @@ import TextField from '../../common/components/input'
 import MyButton from '../../common/components/Button'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Right, Left, Footer,Body,Item} from 'native-base';
+import * as API from '../../api/index';
+import Loader from '../../common/components/Loader'
 import ImagePicker from 'react-native-image-picker';
+import AsyncStorage from '@react-native-community/async-storage';
 const width = Dimensions.get('window').width;
 const height =Dimensions.get('window').height;
 
-class AddEmp extends React.Component{
+class EditEmp extends React.Component{
 
     constructor(props){
         super(props);
         
         this.state = {  
-            epassword:'',
-            ecpassword:'',
-          loading:true,
-          clogo:'',
+          
+          visible:false,
+          clogo:[],
           ename:'',
           emobile:'',
           eemail:'',
-          tin:'',
           eid:'',
-
-         
+          token:'',
+          empid:'',
+          isVisible:false,
+          serverlogo:'',
+          empData:[]
         }     
     }
 validateInput = ()=>{
@@ -73,6 +77,7 @@ return true;
       ToastAndroid.CENTER
     );
   };
+
   takePicture() {
     const options = {
       title: 'Select Image',
@@ -93,20 +98,56 @@ return true;
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
-        const source = response.uri;
+        const source = response;
         this.setState({ clogo: source });
       }
     });
   }
+  componentDidMount = async () => {
+    let empData = this.props.navigation.state.params.data
+     AsyncStorage.getItem("user_info").then((value) =>{
+       const mydata = JSON.parse(value)
+          this.setState({id:mydata.id,empData:empData,token:mydata.token,
+          eid:empData.username,ename:empData.name,eemail:empData.email,emobile:empData.mobile,serverlogo:empData.avatar,empid:empData.id
+          })
+      })
+  }
 
-  
+  EditEmp = ()=>{
+if(this.validateInput()){
+    const mydata = this.state
+   
+    const data = {
+      clogo:this.state.clogo,
+      ename:mydata.ename,
+      emobile:mydata.emobile,
+      eemail:mydata.eemail,
+      eid:mydata.eid,
+      token:mydata.token,
+      empid:mydata.empid,
+      id:mydata.id
+    }
+    console.warn("send data " + JSON.stringify(data))
+    this.setState({visible:true})
+    API.EditEmp(data)
+     .then(res => {
+       this.setState({visible:false,isVisible:true})
+       console.warn('logindetail',res);  
+  setTimeout(this.handleClose, 3000)  
+      })
+    }
+  }
+  handleClose = ()=>{
+    this.setState({isVisible:false})
+    this.props.navigation.navigate('Employees2')
+  }
     render(){
 
         return(
              <ImageBackground source = {require('../../img/login_back.png')} style = {{flex:1}}>
                  <Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
-                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25}}/>}
+                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}}  onPress = {()=>this.props.navigation.goBack()}/>}
                  centerComponent={{ text: 'Edit Employee', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  containerStyle={{
                  backgroundColor: '#2aabe4',
@@ -114,12 +155,12 @@ return true;
                  borderWidth:0,borderBottomColor:'#2aabe4'
                 }}
               />
-                          <Modal transparent={true}
+              <Loader visible ={this.state.visible}/>
+         <Modal transparent={true}
        visible={this.state.isVisible}
        onRequestClose={this.closeModal}>
-  <View style={{
-          flex: 1,
-          flexDirection: 'column',
+  <View style={{ flex: 1,
+ flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
     <View style={{
@@ -142,7 +183,9 @@ return true;
               overlayContainerStyle={{ backgroundColor: '#FFF',borderColor: '#2aabe4', }}          
               rounded
               containerStyle={{ borderColor: '#2aabe4', borderWidth: 1, alignSelf: 'center',backgroundColor:'white'}}
-              source={this.state.clogo != '' ? { uri: this.state.clogo} : require('../../img/profile.png')}
+              
+              source={this.state.serverlogo && this.state.clogo.length<1?{uri:"https://lubeatwork.markupdesigns.org/assets/employee/" +this.state.serverlogo}:this.state.clogo.length ===0?require('../../img/profile.png'):{uri:this.state.clogo.uri}}
+                
               imageProps={{ resizeMode: 'cover' ,borderColor: 'black'}}
               showEditButton
               iconStyle = {{backgroundColor:'#2aabe4'}}
@@ -191,7 +234,7 @@ return true;
      />
   <Text></Text>
    <Text></Text>
-   <MyButton title="UPDATE" onPress = {this.validateInput}/>
+   <MyButton title="UPDATE" onPress = {this.EditEmp}/>
  </View>
  </ImageBackground>   
         )}}
@@ -211,4 +254,4 @@ const styles = StyleSheet.create({
       },
 
   });
-export default AddEmp;
+export default EditEmp;

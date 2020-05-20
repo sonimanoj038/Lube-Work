@@ -1,10 +1,15 @@
 import React from 'react';
-import { View, Image, StatusBar ,StyleSheet,ImageBackground,Modal,ToastAndroid,Dimensions,TouchableOpacity} from 'react-native';
+import { View, Image, StatusBar ,StyleSheet,ImageBackground,Modal,ToastAndroid,Dimensions,TouchableOpacity,Linking} from 'react-native';
 import { Avatar,Input,Lebal,Button ,CheckBox,Header} from 'react-native-elements';
 import TextField from '../../common/components/input'
 import MyButton from '../../common/components/Button'
 import Icon from 'react-native-vector-icons/Ionicons';
+import LinearGradient from 'react-native-linear-gradient';
 import { Right, Left, Footer,Body,Item,Card,CardItem,Text} from 'native-base';
+import Loader from '../../common/components/Loader'
+import AsyncStorage from '@react-native-community/async-storage';
+import * as API from '../../api/index';
+import DocumentPicker from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-picker';
 const width = Dimensions.get('window').width;
 const height =Dimensions.get('window').height;
@@ -15,19 +20,15 @@ class  Employees1 extends React.Component{
         super(props);
         
         this.state = {  
-            password:'',
-            cpassword:'',
-          loading:true,
-          clogo:'',
-          cname:'',
-          cmobile:'',
-          cemail:'',
-          tin:'',
-          cid:'',
-          cperson:'',
-          Vehicles:'',
-          caddress:'',
-          count:1
+           
+          visible:false,
+          doc1:'',
+          doc1name:'',
+          doc1type:'',
+          id:'',
+          token:'',
+          url:'http://lubeatwork.markupdesigns.org/assets/boko.csv'
+
         }     
     }
 validateInput = ()=>{
@@ -62,6 +63,66 @@ return true;
       ToastAndroid.CENTER
     );
   };
+
+  
+getFile =async()=>
+
+{
+  try {
+    const res = await DocumentPicker.pick({
+      type: DocumentPicker.types.allFiles,
+    })
+   
+   console.log(res)
+    this.setState({doc1:res.uri,
+    doc1name:res.name,doc1type:res.type,visible:true})
+
+    await this.UploadEmp()
+  } catch (err) {
+    if (DocumentPicker.isCancel(err)) {
+      console.warn(err)
+    } else {
+      throw err;
+    }
+  }
+}
+UploadEmp = ()=>{
+     const mydata = this.state
+     const data = { 
+        id:mydata.id,
+        token:mydata.token,
+        url:this.state.doc1,
+        name:mydata.doc1name,
+        type:mydata.doc1type
+        }
+    API.UploadEmp(data)
+     .then(res => {
+       console.warn('detail',res);
+       this.setState({visible:false})
+       if(res.status ==='Success'){
+         this.setState({isVisible:false})
+      this.props.navigation.navigate('Employees2')
+       }
+    })
+
+}
+componentDidMount = async () => {
+ 
+   AsyncStorage.getItem("user_info").then((value) =>{
+     const mydata = JSON.parse(value)
+        this.setState({id:mydata.id,token:mydata.token})
+console.warn(mydata.id)
+    })
+}
+getSample = () => {
+  Linking.canOpenURL(this.state.url).then(supported => {
+    if (supported) {
+      Linking.openURL(this.state.url);
+    } else {
+      console.log("Don't know how to open URI: " + this.props.url);
+    }
+  });
+};
   takePicture() {
     const options = {
       title: 'Select Image',
@@ -88,16 +149,13 @@ return true;
     });
   }
 
- 
-     
-  
     render(){
 
         return(
              <ImageBackground source = {require('../../img/back3.png')} style = {{flex:1}}>
                  <Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
-                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25}} />}
+                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}}  onPress = {()=>this.props.navigation.goBack()}/>}
                  centerComponent={{ text: 'Employees', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  rightComponent={ <View style = {{flexDirection:'row'}}>
                      <Icon name='ios-add'  style={{color:'white',fontSize:30,marginHorizontal:15}} onPress={()=>this.props.navigation.navigate('Employees2')}/>
@@ -128,6 +186,7 @@ return true;
     </View>
   </View>
 </Modal>      */}
+<Loader visible ={this.state.visible}/> 
     <View style = {{flex:0.5,alignItems:'center',PaddingHorizontal:10,paddingVertical:30,marginBottom:-50}}>
     
 
@@ -155,12 +214,28 @@ return true;
                 <Text></Text>
                 <Text></Text>
                 <Text></Text>
-                <MyButton title="SEND APPLICATION LINK"/>
+                 <LinearGradient 
+          
+            colors={['#ebeae6','grey' ]}
+            style={styles.LinearGradientStyle}  
+            start={{x: 0, y: 1}} 
+            end={{x: 1.5, y: 0.6}}
+            locations={[0, 0.5]}
+            >
+ 
+              <Text style={styles.buttonText}>SEND APPLICATION LINK</Text>
+                  
+            </LinearGradient>
+                {/* <MyButton title="SEND APPLICATION LINK" style = {{justifyContent:'center',alignItems:'center',paddingHorizontal:20}}/> */}
               </Body>
             </CardItem>
             <CardItem footer style = {{justifyContent:'space-between',paddingHorizontal:10,flexDirection:'row'}}>
+            <TouchableOpacity onPress ={this.getSample}>
               <Text style = {{fontSize:13,color:'#2aabe4',fontWeight:'bold'}}>XLS Sample</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress ={this.getFile}>
               <Text style = {{fontSize:13,color:'#2aabe4',fontWeight:'bold'}}>Upload Employees</Text>
+              </TouchableOpacity>
             </CardItem>
          </Card>
  </View>
@@ -180,6 +255,25 @@ const styles = StyleSheet.create({
         width:'100%',
         flex:1,
       },
+      LinearGradientStyle: {
+    justifyContent:'center',
+    borderRadius: 5,
+    marginBottom: 20,
+    alignItems:'center',
+    alignSelf:'center',
+    width:'100%'
+  },
+
+  buttonText: {
+   fontSize: 18,
+   fontWeight:'bold',
+   textAlign: 'center',
+   margin: 15,
+   color : '#fff',
+   backgroundColor: 'transparent' 
+ 
+ },
+
 
   });
 export default Employees1;
