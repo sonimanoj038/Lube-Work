@@ -38,13 +38,28 @@ if(opassword ===""){
  this.showToastWithGravity("Enter Old Password")
 return false;
 }
+else if (opassword.length<6)
+{
+  this.showToastWithGravity(" Old password should be atleast 6 character")
+  return false;
+}
 else if(password ===""){
  this.showToastWithGravity("Enter new Password")
 return false;
 }
+else if (password.length<6)
+{
+  this.showToastWithGravity(" New password should be atleast 6 character")
+  return false;
+}
 else if(cpassword ===""){
  this.showToastWithGravity("Enter Cnfirm Password")
 return false;
+}
+else if (cpassword.length<6)
+{
+  this.showToastWithGravity(" Confirm password should be atleast 6 character")
+  return false;
 }
 else if(cpassword !=password){
  this.showToastWithGravity("Password not matched")
@@ -104,18 +119,18 @@ console.warn(mydata.id)
   }}
   handleClose = ()=>{
     this.setState({modalShow:false})
-    this.props.navigation.navigate('EMenu')
+    this.props.navigation.navigate('LoginTack')
   }
     render(){
         return(
              <ImageBackground source = {require('../../img/login_back.png')} style = {{flex:1}}>
                  <Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
-                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}}  onPress = {()=>this.props.navigation.goBack()}/>}
+                //  leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}}  onPress = {()=>this.props.navigation.goBack()}/>}
                  centerComponent={{ text: 'Change Password', style: { color: '#fff',fontWeight:'bold',fontSize:20 }}}
                  rightComponent={ <View style = {{flexDirection:'row'}}>
                      
-                 {/* <Icon name='md-menu'  style={{color:'white',fontSize:25,right:20}} /> */}
+                 <Icon name='md-menu'  style={{color:'white',fontSize:25,right:10}}  onPress = {()=>this.props.navigation.goBack()}/>
                  </View>
                 }
                  containerStyle={{

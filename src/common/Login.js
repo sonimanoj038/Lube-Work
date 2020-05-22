@@ -40,8 +40,13 @@ else if (password ==="")
   this.showToastWithGravity("Enter your Password")
   return false;
 }
+else if (password.length<6)
+{
+  this.showToastWithGravity("Password should be atleast 6 character")
+  return false;
+}
 else
-this.setState({disabled:true,visible:true})
+this.setState({disabled:true})
 return true;
 }
   showToastWithGravity = (msg) => {
@@ -67,7 +72,7 @@ return true;
   }
   signinSimple=()=>{
   if(this.validateInput()){
-    // this.setState({visible:true})
+    this.setState({visible:true})
       const mydata = this.state
       const data = {username:mydata.user,password:mydata.password}
       API.login(data)
@@ -88,7 +93,9 @@ console.warn("fsdfdsf" + res.avatar)
               'role':response.role,
               'token':response.token,
               'avatar':response.avatar,
-              'noEmp':response.noemployee
+              'noEmp':response.noemployee,
+              'push':response.push_mute
+
             } 
             
             this.setState({user:"",password:""

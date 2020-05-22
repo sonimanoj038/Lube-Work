@@ -67,11 +67,29 @@ class  CNotifications extends React.Component{
     })
 }
 
+StopNotification=()=>{
+  this.setState({isEnabled:!this.state.isEnabled,isVisible:false})
+  const mydata = this.state
+   const data = { 
+      id:mydata.id,
+      token:mydata.token
+      }
+  API.StopNotification(data)
+   .then(res => {
+     console.warn('Notifcation',res);
+     if(res.status ==='Success'){
+       this.setState({isVisible:false})
+       this.showToastWithGravity(res.msg + " " +  "Successfully")
+    
+     }
+  })
+}
 componentDidMount = async () => {
    AsyncStorage.getItem("user_info").then((value) =>{
      const mydata = JSON.parse(value)
-        this.setState({id:mydata.id,token:mydata.token})
+        this.setState({id:mydata.id,token:mydata.token,isEnabled:mydata.push ==='1'?true:false})
 this.getNotifications()
+
     })
 }
 
@@ -86,8 +104,10 @@ this.getNotifications()
   )
   
   toggleSwitch = ()=>{
-      this.setState({isEnabled:!this.state.isEnabled})
+     this.setState({isVisible:true})
   }
+
+  
     render(){
       if(this.state.visible){
 
@@ -97,19 +117,16 @@ this.getNotifications()
              <ImageBackground source = {require('../../img/back3.png')} style = {{flex:1}}>
                  <Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
-                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}} onPress = {()=>this.props.navigation.goBack()}/>}
+                //  leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}} onPress = {()=>this.props.navigation.goBack()}/>}
                  centerComponent={{ text: 'Notifications', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
-                 rightComponent={ <View style = {{flexDirection:'row'}}>
-                       <Switch 
-                       trackColor={{ false: "#f1f1f1", true: "#f1f1f1" }}
-                       thumbColor={this.state.isEnabled ? "#2aabe4" : "#2aabe4"}
-                       ios_backgroundColor="#3e3e3e"
-                       style = {{right:10}}
-                       onValueChange={this.toggleSwitch}
-                       value={this.state.isEnabled}
-                       />
+                 rightComponent={ <View style = {{flexDirection:'row',justifyContent:'space-around'}}>
+                 <TouchableOpacity style = {{alignContent:'center',alignItems:'center',justifyContent:'center',marginHorizontal:8,right:8}} onPress = {this.toggleSwitch}>
+                      {this.state.isEnabled?<Image source={require('../../img/switchon.png')}  style={{ maxHeight: 18, maxWidth: 35,resizeMode:'cover' }} />:
+                     
+                     <Image source={require('../../img/switchoff.png')} style={{ maxHeight: 18, maxWidth: 35,resizeMode:'cover' }} />}
+                      </TouchableOpacity>
                      {/* <Icon name='ios-add'  style={{color:'white',fontSize:30,right:10}} onPress={()=>this.props.navigation.navigate('AddEmp')}/> */}
-                 <Icon name='md-menu'  style={{color:'white',fontSize:30,right:5}} onPress={()=>this.props.navigation.navigate('EMenu')}/>
+                 <Icon name='md-menu'  style={{color:'white',fontSize:30,right:5,}} onPress={()=>this.props.navigation.navigate('EMenu')}/>
                  </View>
                 }
                  containerStyle={{
@@ -133,12 +150,15 @@ this.getNotifications()
             height: height/3.5,backgroundColor:'white',alignItems:'center',borderRadius:7,padding:20}}>
       
          <Text></Text>
-      <Text style = {{fontSize:23,color:'#272727',textAlign:'center',alignItems:'center',alignSelf:'center'}}>
-              Are you sure you want to stop notifications?   </Text>
+      {this.state.isEnabled?<Text style = {{fontSize:23,color:'#272727',textAlign:'center',alignItems:'center',alignSelf:'center'}}>
+              Are you sure you want to unmute notifications?   </Text>:
+              <Text style = {{fontSize:23,color:'#272727',textAlign:'center',alignItems:'center',alignSelf:'center'}}>
+              Are you sure you want to mute notifications?  </Text>
+              }
           <Text></Text> 
           <Text></Text> 
           <View style={styles.MainContainer}>
-          <TouchableOpacity  onPress = {this.BlockEmp}>
+          <TouchableOpacity  onPress = {this.StopNotification}>
             <LinearGradient  colors={['#1282c1', '#01c0dc']} style={styles.LinearGradientStyle} >
               <Text style={styles.buttonText}>YES</Text>   
             </LinearGradient>
@@ -160,6 +180,9 @@ this.getNotifications()
     <View style = {{flex:0.5,alignItems:'center',PaddingHorizontal:10,paddingVertical:30,marginBottom:-50}}>
   </View>
   <View style = {{flex:3.2}}>
+  <Text style = {{alignItems:'center',textAlign:'left',padding:20,opacity:0.8}}> 
+  Announcement from admin
+     </Text>
      {this.state.data.length<1?<Text style = {{alignItems:'center',textAlign:'center',padding:20}}> 
      No Record Found
      </Text>:<FlatList
@@ -198,6 +221,32 @@ const styles = StyleSheet.create({
         width:'100%',
         flex:1,
       },
+      MainContainer :{
+
+        flexDirection:'row',
+        justifyContent:'space-between',
+        width:'100%'  
+      },
+    
+      LinearGradientStyle: {
+        height: 50,
+        
+        borderRadius: 5,
+        marginBottom: 20,
+        width:150,
+        margin:10
+      },
+    
+      buttonText: {
+       fontSize: 18,
+       textAlign: 'center',
+       margin: 12,
+       fontWeight:'bold',
+       color : '#fff',
+       backgroundColor: 'transparent' 
+     
+     },
+      
 
   });
 export default CNotifications;

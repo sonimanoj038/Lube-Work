@@ -35,6 +35,10 @@ if(password ===""){
  this.showToastWithGravity("Enter new password")
 return false;
 }
+else if(password.length<6){
+  this.showToastWithGravity("Password should be atleast 6 character")
+ return false;
+ }
 else if(cpassword ===""){
  this.showToastWithGravity("Enter confirm new password")
 return false;

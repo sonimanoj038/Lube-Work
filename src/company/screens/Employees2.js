@@ -106,7 +106,6 @@ getFile =async()=>
   )
 
   UploadEmp = ()=>{
-
     const mydata = this.state
      const data = { 
         id:mydata.id,
@@ -153,6 +152,27 @@ SendLink = (mydata)=>{
        }    
     })}
 
+
+    SendToAllLink = ()=>{
+      const data = { 
+          id:this.state.id,
+         token:this.state.token, 
+      
+         }
+          this.setState({visible:true})
+     API.SendToAllLink(data)
+      .then(res => {
+        console.warn('detail',res);
+        if(res.status ==='Success'){
+          this.setState({visible:false,msg:res.msg})
+          
+      this.getEmp()
+        }  
+        else{
+          this.setState({visible:false,msg:res.msg})
+          this.showToastWithGravity(res.msg)
+        }  
+     })}
 BlockEmp = (mydata)=>{
      const data = { 
         id:this.state.id,
@@ -160,7 +180,7 @@ BlockEmp = (mydata)=>{
         eid:mydata.id
         }
          this.setState({visible:true})
-    API.SendLink(data)
+    API.BlockEmp(data)
      .then(res => {
        console.warn('detail',res);
        if(res.status ==='Success'){
@@ -174,9 +194,11 @@ BlockEmp = (mydata)=>{
 }
   openDetails = (item)=>{  
 if(item.send_link ==='0'){
+
   this.SendLink(item)
 }
-else if(item.status ==='1'){
+else if(item.complete ==='1'){
+
   this.BlockEmp(item)  
 }
 else {
@@ -186,8 +208,6 @@ else {
    
 OpenEmp = (item)=>{
   this.props.navigation.navigate('EditEmp',{data:item})
-
-
 }
   
     render(){
@@ -196,12 +216,12 @@ OpenEmp = (item)=>{
              <ImageBackground source = {require('../../img/back3.png')} style = {{flex:1}}>
                  <Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
-                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25}}/>}
+                //  leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}}  onPress = {()=>this.props.navigation.goBack()}/>}
                  centerComponent={{ text: 'Employees', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  rightComponent={ <View style = {{flexDirection:'row'}}>
-                      <Icon name='ios-search'  style={{color:'white',fontSize:28,marginHorizontal:15}} />
-                     <Icon name='ios-add'  style={{color:'white',fontSize:30,right:10}} onPress={()=>this.props.navigation.navigate('AddEmp')}/>
-                 <Icon name='md-menu'  style={{color:'white',fontSize:30,right:5}} onPress={()=>this.props.navigation.navigate('EMenu')}/>
+                      <Icon name='ios-search'  style={{color:'white',fontSize:28,marginHorizontal:5}} />
+                     <Icon name='ios-add'  style={{color:'white',fontSize:30,marginHorizontal:5}} onPress={()=>this.props.navigation.navigate('AddEmp')}/>
+                 <Icon name='md-menu'  style={{color:'white',fontSize:30,right:5,marginHorizontal:10}} onPress={()=>this.props.navigation.navigate('EMenu')}/>
                  </View>
                 }
                  containerStyle={{
@@ -259,14 +279,17 @@ OpenEmp = (item)=>{
                 <TouchableOpacity
                 onPress={()=>this.openDetails(item)}
                  style ={{width: 50,height: 50, borderRadius: 50/2,backgroundColor:'#2aabe4',alignItems:'center',justifyContent:'center'}}>
-<Icon name= {item.send_link ==='1'?'md-checkmark':item.send_link==='0'?'ios-mail':'md-eye-off'}  style={{color:'white',fontSize:25}}/>
+                 
+ {item.send_link==='1' && item.complete ==='0' ?<Icon name='md-checkmark' style={{color:'white',fontSize:25}} />
+ :item.send_link==='0' && item.complete ==='0'?<Icon name='ios-mail' style={{color:'white',fontSize:25}}/>: 
+ <Image source={require('../../img/block.png')} style={{ maxHeight: 23, maxWidth: 23,resizeMode:'cover' }} />}  
     </TouchableOpacity>
               </Right>
             </ListItem>
            </List> )}
           keyExtractor={(item, index) => index.toString()}
         />
-        <MyButton title="SEND APPLICATION LINK"  style = {{marginHorizontal:20}}/>
+        <MyButton title="SEND APPLICATION LINK"  onPress = {this.SendToAllLink} style = {{marginHorizontal:20,top:8}}/>
    <View footer style = {{justifyContent:'space-between',paddingHorizontal:10,flexDirection:'row',padding:10}}>
               <TouchableOpacity onPress ={this.getSample}>
               <Text style = {{fontSize:13,color:'#2aabe4',fontWeight:'bold'}}>XLS Sample</Text>

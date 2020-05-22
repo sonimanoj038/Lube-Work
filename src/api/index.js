@@ -1,3 +1,4 @@
+import { cos } from "react-native-reanimated";
 
 const BaseUrl = 'https://lubeatwork.markupdesigns.org/api/';
 
@@ -20,9 +21,8 @@ export const login= (data) => {
 
 export const changePassword= (data) => {
     console.warn(data.token);
-    
     let formdata = new FormData();
-    formdata.append("OldPassword",data.OldPassword);
+    formdata.append("OldPassword",data.opassword);
     formdata.append("Password",data.password);
       formdata.append("ConfirmPassword",data.cpassword);
           formdata.append("id",data.id); 
@@ -117,6 +117,7 @@ export const submitEditProfile= (data) => {
 }
 
 export const EditCProfile= (data) => { 
+  console.warn("mydara" + JSON.stringify(data))
     let formdata = new FormData();
           formdata.append("id",data.id);
           
@@ -282,6 +283,21 @@ return fetch(url, {
 .catch(e => console.log(e));
 }
 
+export const SendToAllLink= (data) => { 
+  let formdata = new FormData();
+   formdata.append("id",data.id)
+const url = `${BaseUrl}sendAllAppLink`;
+return fetch(url, {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
+}
 export const BlockEmp= (data) => { 
   let formdata = new FormData();
    formdata.append("id",data.id)
@@ -299,6 +315,22 @@ return fetch(url, {
 .catch(e => console.log(e));
 }
 
+export const UnBlockEmp= (data) => { 
+  let formdata = new FormData();
+   formdata.append("id",data.id)
+   formdata.append("eid",data.eid)
+const url = `${BaseUrl}unblockArchive`;
+return fetch(url, {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
+}
 
 export const getArchive= (data) => { 
   let formdata = new FormData();
@@ -358,6 +390,22 @@ return fetch(url,{
       headers: {
        'Content-Type': 'multipart/form-data',
        'Accept': 'application/json',
+        'Apiauthorization':data.token,
+      },
+      body:formdata
+})
+.then(res => res.json())
+.catch(e => console.log(e));
+}
+
+export const StopNotification= (data) => {
+  let formdata = new FormData();
+  formdata.append("id",data.id); 
+const url = `${BaseUrl}pushsetting`;
+return fetch(url, {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'multipart/form-data',
         'Apiauthorization':data.token,
       },
       body:formdata

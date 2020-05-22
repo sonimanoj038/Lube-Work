@@ -81,7 +81,6 @@ else if(item.id ==='5'){
          this.props.navigation.navigate('LoginTack')
          }
       })
-
 }
 componentDidMount = async () => {
  
@@ -98,7 +97,6 @@ const data = [{"id":"1","path":require('../../img/Employees.png'),"name":'Employ
 {"id":"3","path":require('../../img/Archieve.png'),"name":"Archive"},
 {"id":"4","path":require('../../img/password.png'),"name":"Change Password"},
 {"id":"5","path":require('../../img/logout.png'),"name":"Logout"},
-
 ]
         return(
              <ImageBackground source = {require('../../img/back3.png')} style = {{flex:1}}>
@@ -128,7 +126,7 @@ const data = [{"id":"1","path":require('../../img/Employees.png'),"name":'Employ
       
          <Text></Text>
       <Text style = {{fontSize:23,color:'#272727',textAlign:'center',alignItems:'center',alignSelf:'center'}}>
-              Are you sure  you want to logout?   </Text>
+              Are you sure  you want to logout?</Text>
           <Text></Text> 
           <Text></Text> 
           <View style={styles.MainContainer}>
@@ -159,6 +157,7 @@ const data = [{"id":"1","path":require('../../img/Employees.png'),"name":'Employ
               onEditPress={()=> this.props.navigation.navigate('EditCProfile')}
               overlayContainerStyle={{ backgroundColor: '#FFF',borderColor: '#2aabe4', }}          
               rounded
+              showEditButton = {false}
               containerStyle={{ borderColor: '#2aabe4', borderWidth: 1, alignSelf: 'center',backgroundColor:'white'}}
               source={this.state.avatar != '' ? { uri:"https://lubeatwork.markupdesigns.org/"+this.state.avatar} : require('../../img/profile.png')}
               imageProps={{ resizeMode: 'cover' ,borderColor: 'black'}}

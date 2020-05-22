@@ -7,6 +7,7 @@ import MyModal from '../../common/components/Modal'
 import Icon from 'react-native-vector-icons/Ionicons';
 import Loader from '../../common/components/Loader'
 import * as API from '../../api/index';
+import moment from 'moment';
 import { Right, Left, Footer,Body,Item} from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
 import DatePicker from 'react-native-datepicker'
@@ -33,19 +34,31 @@ validateInput = ()=>{
 return true
 }
   setAvailability(stateValue, key, field) {
+    var timing = [...this.state.timing];
+  
     console.log(stateValue)
-        var timing = [...this.state.timing];
+        
         if (field == "day") {
+         
             timing[key].checked = !stateValue;
         }
         
         if (field == "start_time") {
-           timing[key].start_display_time = stateValue;
-           timing[key].start_time = stateValue;
+          if(timing[key].checked ===false)
+          {
+            return false
+          }
+           timing[key].start_display_time = this.getTwentyFourHourTime(stateValue);;
+           timing[key].start_time = this.getTwentyFourHourTime(stateValue);
         }
         if (field == "end_time") {
-           timing[key].end_display_time = stateValue;
-           timing[key].end_time = stateValue;
+          if(timing[key].checked ===false)
+          {
+            return false
+          }
+
+           timing[key].end_display_time = this.getTwentyFourHourTime(stateValue);;
+           timing[key].end_time = this.getTwentyFourHourTime(stateValue);
         }
         console.log(timing[key])
         this.setState({timing})
@@ -92,6 +105,10 @@ handleClose = ()=>{
   this.setState({modalShow:false})
   this.props.navigation.navigate('EMenu')
 }
+getTwentyFourHourTime(amPmString) { 
+  
+  return moment(amPmString, ["hh:mm"]).format("HH:mm");
+}
     printAvailability() {
         return this.state.timing.map((item, key) => {
             var checkStatus = this.state.timing[key].checked;
@@ -102,7 +119,7 @@ handleClose = ()=>{
                    <View style={styles.threeRow}>
                         <CheckBox
                             containerStyle={{padding:0,borderWidth:0,marginHorizontal:0,}}
-                            textStyle={{fontWeight:'normal',padding:0,fontSize:13}}
+                            textStyle={{fontWeight:'normal',padding:0,fontSize:12}}
                             title={item.day}
                             checked={checkStatus}
                             uncheckedColor = "black"
@@ -119,8 +136,9 @@ handleClose = ()=>{
                             mode="time"
                             is24Hour={true}
                             date={startTime}
+                            
                             //placeholder="HH:MM"
-                            format='hh:mm '
+                            format='HH:mm'
                             confirmBtnText="Confirm"
                             cancelBtnText="Cancel"
                             local = "en_GB"
@@ -149,7 +167,7 @@ handleClose = ()=>{
                             is24Hour={true}
                             date={endTime}
                             //placeholder="HH:MM"
-                            format='hh:mm '
+                            format='HH:mm'
                             confirmBtnText="Confirm"
                             cancelBtnText="Cancel"
                             onDateChange={(end_time) => { this.setAvailability(end_time, key, 'end_time') }}

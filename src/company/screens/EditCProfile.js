@@ -186,6 +186,7 @@ return true;
    const  data = {id:mydata.id,token:mydata.token}
       API.EditCProfile(data)
        .then(res => {
+         console.warn("data"+res)
           if (res.success ===true) {
            let response = res['data']
            let detail = res['data']['details']
@@ -208,25 +209,24 @@ return true;
             
             })
        }
-    })
-        
-      })
+    })})
        
 }
     render(){
 if(this.state.visible){
 
-  return<Loader visible ={this.state.visible}/>
+  return<Loader visible ={this.state.visible} onRequestClose = {()=>this.setState({visible:false})} />
 }
         return(
              <ImageBackground source = {require('../../img/loginback.png')} style = {{flex:1}}>
                 <Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
-                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}} onPress = {()=>this.props.navigation.goBack()}/>}
-                 centerComponent={{ text: 'Edit Your Profile', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
+                //  leftC
+                omponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}} onPress = {()=>this.props.navigation.goBack()}/>}
+                 centerComponent={{ text: 'Edit Your Profile', style: { color: '#fff',fontWeight:'bold',fontSize:20 }} }
                  rightComponent={ <View style = {{flexDirection:'row'}}>
                      {/* <Icon name='ios-create'  style={{color:'white',fontSize:25,marginHorizontal:5,right:10}}/> */}
-                 <Icon name='md-menu'  style={{color:'white',fontSize:25,right:10}}/>
+                 <Icon name='md-menu'  style={{color:'white',fontSize:25,right:10}} onPress = {()=>this.props.navigation.goBack()}/>
                  </View>
                 }
                  containerStyle={{

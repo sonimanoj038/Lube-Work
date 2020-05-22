@@ -31,6 +31,7 @@ class AddEmp extends React.Component{
           id:'',
           token:'',
           isVisible:false,
+          empid:''
 
 
          
@@ -61,12 +62,21 @@ else if(eemail ===""){
     this.showToastWithGravity("Enter Email")
    return false;
    }
+   else if (eemail && !this.validateEmail(eemail)) {
+    this.showToastWithGravity('Please enter valid Email ID');
+    return false
+  }
    else if(emobile===""){
     this.showToastWithGravity("Enter Phone Number")
    return false;
    }
    else if(epassword ===""){
     this.showToastWithGravity("Enter Password")
+    
+   return false;
+   }
+   else if(ecpassword.length<6){
+    this.showToastWithGravity("Password should be atleast 6 character")
    return false;
    }
    else if(ecpassword ===""){
@@ -147,13 +157,43 @@ if(this.validateInput()){
      this.setState({visible:true})
       API.AddEmp(data)
        .then(res => {
-         this.setState({visible:false,isVisible:true})
+         if(res.status)
+         console.log("reea" + res.empid)
+         this.setState({empid:res.empid,visible:false,isVisible:true,})
          console.warn('logindetail',res);
-           this.props.navigation.navigate('Employees2')
-      
    })
   }
   }
+
+  validateEmail(email) {
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/.test(email))
+    {
+      return true;
+    }
+    return false;
+  }
+
+  SendLink = ()=>{
+    const data = { 
+        id:this.state.id,
+       token:this.state.token, 
+       eid:this.state.empid
+       }
+        this.setState({visible:true})
+   API.SendLink(data)
+    .then(res => {
+      console.warn('detail',res);
+      if(res.status ==='Success'){
+       
+        this.props.navigation.navigate('Employees2')
+      }  
+      else
+      {
+        this.setState({visible:false,msg:res.msg})
+        this.showToastWithGravity(res.msg)
+      }  
+   })}
+
     render(){
 
         return(
@@ -188,7 +228,7 @@ if(this.validateInput()){
           <Text></Text> 
           <Text></Text> 
           <View style={styles.MainContainer}>
-        <TouchableOpacity >
+        <TouchableOpacity  onPress = {this.SendLink}>
 
             <LinearGradient  colors={['#1282c1', '#01c0dc']} style={styles.LinearGradientStyle} >
                   <Text style={styles.buttonText}> SEND LINK </Text>
@@ -275,11 +315,14 @@ if(this.validateInput()){
     <Input
       onChangeText={epassword => this.setState({epassword})}
       placeholder ='password'
+      secureTextEntry = {true}
+    
       inputStyle={{color:'#242424',fontSize:15,fontWeight:'bold',padding: 0}}
       inputContainerStyle = {{borderBottomColor:'#2aabe4',padding: 0}}
    />
 <Text></Text>
      <Input
+     secureTextEntry = {true}
       onChangeText={ecpassword => this.setState({ecpassword})}
       placeholder ='Confirm Password'
       inputStyle={{color:'#242424',fontSize:15,fontWeight:'bold',padding: 0}}
@@ -316,7 +359,6 @@ const styles = StyleSheet.create({
     
       LinearGradientStyle: {
         height: 50,
-        
         borderRadius: 5,
         marginBottom: 20,
         width:150,

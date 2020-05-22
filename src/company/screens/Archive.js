@@ -28,7 +28,8 @@ class  Archive extends React.Component{
           Empdata:{},
           token:'',
           id:'',
-          isVisible:false
+          isVisible:false,
+          visible2:false
         }     
     }
 
@@ -80,19 +81,19 @@ this.getArchive()
   )
   
 
-BlockEmp = ()=>{
+UnBlockEmp = ()=>{
 const mydata = this.state.Empdata
      const data = { 
         id:this.state.id,
         token:this.state.token, 
         eid:mydata.id
         }
-          this.setState({visible:true})
-    API.BlockEmp(data)
+          this.setState({visible2:true})
+    API.UnBlockEmp(data)
      .then(res => {
        console.warn('detail',res);
        if(res.status ==='Success'){
-         this.setState({visible:false,msg:res.msg})
+         this.setState({visible2:false,msg:res.msg,isVisible:false})
           this.showToastWithGravity(res.msg)
     this.getArchive()
        }
@@ -112,7 +113,7 @@ this.setState({isVisible:true,Empdata:item})
              <ImageBackground source = {require('../../img/back3.png')} style = {{flex:1}}>
                  <Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
-                 leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}} onPress = {()=>this.props.navigation.goBack()}/>}
+                //  leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}} onPress = {()=>this.props.navigation.goBack()}/>}
                  centerComponent={{ text: 'Archive', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  rightComponent={ <View style = {{flexDirection:'row'}}>
                       <Icon name='ios-search'  style={{color:'white',fontSize:28,marginHorizontal:15}} />
@@ -127,6 +128,7 @@ this.setState({isVisible:true,Empdata:item})
                 }}
               />
                <Loader visible ={this.state.visible}/> 
+               <Loader visible ={this.state.visible2}/> 
               <Modal transparent={true}
        visible={this.state.isVisible}
        onRequestClose={this.closeModal}>
@@ -146,7 +148,7 @@ this.setState({isVisible:true,Empdata:item})
           <Text></Text> 
           <Text></Text> 
           <View style={styles.MainContainer}>
-          <TouchableOpacity  onPress = {this.BlockEmp}>
+          <TouchableOpacity  onPress = {this.UnBlockEmp}>
             <LinearGradient  colors={['#1282c1', '#01c0dc']} style={styles.LinearGradientStyle} >
               <Text style={styles.buttonText}>YES</Text>   
             </LinearGradient>
@@ -193,7 +195,7 @@ this.setState({isVisible:true,Empdata:item})
           style ={{width: 50,
          height: 50,
        borderRadius: 50/2,backgroundColor:'#2aabe4',alignItems:'center',justifyContent:'center'}}>
-<Icon name= {item.send_link ==='1'?'md-checkmark':item.send_link==='0'?'ios-mail':'md-eye-off'}  style={{color:'white',fontSize:25}}/>
+<Image source={require('../../img/block.png')} style={{ maxHeight: 23, maxWidth: 23,resizeMode:'cover' }} />
          </TouchableOpacity>
               </Right>
             </ListItem>
@@ -220,6 +222,31 @@ const styles = StyleSheet.create({
         width:'100%',
         flex:1,
       },
+      MainContainer :{
+
+        flexDirection:'row',
+        justifyContent:'space-between',
+        width:'100%'  
+      },
+    
+      LinearGradientStyle: {
+        height: 50,
+        
+        borderRadius: 5,
+        marginBottom: 20,
+        width:150,
+        margin:10
+      },
+    
+      buttonText: {
+       fontSize: 18,
+       textAlign: 'center',
+       margin: 12,
+       fontWeight:'bold',
+       color : '#fff',
+       backgroundColor: 'transparent' 
+     
+     },
 
   });
 export default Archive;
