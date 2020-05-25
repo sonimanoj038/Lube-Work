@@ -210,67 +210,74 @@ if(this.validateInput()){
               />
                     <Loader visible ={this.state.visible}/> 
                       <Modal transparent={true}
-       visible={this.state.isVisible}
-       onRequestClose={this.closeModal}>
-  <View style={{
-          flex: 1,
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
-    <View style={{
-            width: '90%',
-            marginHorizontal:30,
-            height: height/3,backgroundColor:'white',alignItems:'center',borderRadius:7,padding:20}}>
-      <Text style ={{textAlign:'center',alignItems:'center',alignSelf:'center',fontWeight:'bold',fontSize:20,color:'green'}}>Profile Updated Successfully!</Text>
-     <Text></Text>
-      <Text style = {{fontSize:15,color:'green',textAlign:'center',alignItems:'center',alignSelf:'center'}}>
-                If you want to send app invitation link to the added employee then click on send link else click Back button to move to the employees screen                </Text>
-          <Text></Text> 
-          <Text></Text> 
-          <View style={styles.MainContainer}>
-        <TouchableOpacity  onPress = {this.SendLink}>
+                    visible={this.state.isVisible}
+                    onRequestClose={this.closeModal}>
+                    <View style={{
+                            flex: 1,
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+                      <View style={{
+                              width: '90%',
+                              marginHorizontal:30,
+                              height: height/3,backgroundColor:'white',alignItems:'center',borderRadius:7,padding:20}}>
+                        <Text style ={{textAlign:'center',alignItems:'center',alignSelf:'center',fontWeight:'bold',fontSize:20,color:'green'}}>Profile Updated Successfully!</Text>
+                      <Text></Text>
+                        <Text style = {{fontSize:15,color:'green',textAlign:'center',alignItems:'center',alignSelf:'center'}}>
+                                  If you want to send app invitation link to the added employee then click on send link else click Back button to move to the employees screen                </Text>
+                            <Text></Text> 
+                            <Text></Text> 
+                            <View style={styles.MainContainer}>
+                          <TouchableOpacity  onPress = {this.SendLink}>
 
-            <LinearGradient  colors={['#1282c1', '#01c0dc']} style={styles.LinearGradientStyle} >
-                  <Text style={styles.buttonText}> SEND LINK </Text>
-            </LinearGradient>
-        </TouchableOpacity>
-        <TouchableOpacity  onPress={()=>this.setState({isVisible:false})}>
+                              <LinearGradient  colors={['#1282c1', '#01c0dc']} style={styles.LinearGradientStyle} >
+                                    <Text style={styles.buttonText}> SEND LINK </Text>
+                              </LinearGradient>
+                          </TouchableOpacity>
+                          <TouchableOpacity  onPress={()=>this.setState({isVisible:false})}>
 
-            <LinearGradient 
-            colors={['#b29d1c', '#d2b500']}
-            style={styles.LinearGradientStyle}  
-            start={{x: 0, y: 1}} 
-            end={{x: 1, y: 0.9}}
-            locations={[0, 0.3, 0.9]} >
+                              <LinearGradient 
+                              colors={['#b29d1c', '#d2b500']}
+                              style={styles.LinearGradientStyle}  
+                              start={{x: 0, y: 1}} 
+                              end={{x: 1, y: 0.9}}
+                              locations={[0, 0.3, 0.9]} >
 
-              <Text style={styles.buttonText}> BACK </Text>
-                  
-            </LinearGradient>
-        
-        </TouchableOpacity>
+                                <Text style={styles.buttonText}> BACK </Text>
+                                    
+                              </LinearGradient>
+                          
+                          </TouchableOpacity>
 
-      </View>      
-    </View>
-  </View>
-</Modal>
+                        </View>      
+                      </View>
+                    </View>
+                  </Modal>
                 
     <View style = {{flex:0.7,alignItems:'center',PaddingHorizontal:10,paddingVertical:30,marginBottom:-50}}>
 <Item  style ={{flexDirection:'row',borderColor: 'transparent',width:'100%',alignItems:'center',PaddingHorizontal:10,justifyContent:'space-evenly'}}>
 
 <View style ={{flexDirection:'column',marginTop:'15%'}}>
-<Avatar
-              size={130}
-              onEditPress={this.takePicture.bind(this)}
-              overlayContainerStyle={{ backgroundColor: '#FFF',borderColor: '#2aabe4', }}          
-              rounded
-              containerStyle={{ borderColor: '#2aabe4', borderWidth: 1, alignSelf: 'center',backgroundColor:'white'}}
+<ImageBackground
               source={this.state.clogo.length<1  ?  require('../../img/profile.png'):{ uri: this.state.clogo.uri}}
-              imageProps={{ resizeMode: 'cover' ,borderColor: 'black'}}
-              showEditButton
-              iconStyle = {{backgroundColor:'#2aabe4'}}
-              editButton = {{ name: 'mode-edit', type: 'material', color: '#2aabe4',size:25,containerStyle:{backgroundColor:'white',borderColor:'#2aabe4',borderRadius:12} }}
-            />
-             
+            style={{
+               width: 140, height: 140, 
+            }}
+            imageStyle={{borderRadius: 140/2}}
+        >
+          <TouchableOpacity  style={{ height: 32, width: 32, position: 'absolute',backgroundColor:'white',
+      right: -10,
+      marginBottom:10,
+      alignContent:'center',
+      justifyContent:'center',
+      alignItems:'center',
+      borderRadius:32/2,
+      bottom: 0 }}
+      onPress={this.takePicture.bind(this)}
+      >
+          <Image source={require('../../img/editP.png')} style={{ maxHeight: 23, maxWidth: 23,resizeMode:'cover',padding:5 }} />
+          </TouchableOpacity>
+      </ImageBackground>
 </View>
 </Item>
   </View>

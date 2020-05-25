@@ -121,9 +121,9 @@ this.getNotifications()
                  centerComponent={{ text: 'Notifications', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  rightComponent={ <View style = {{flexDirection:'row',justifyContent:'space-around'}}>
                  <TouchableOpacity style = {{alignContent:'center',alignItems:'center',justifyContent:'center',marginHorizontal:8,right:8}} onPress = {this.toggleSwitch}>
-                      {this.state.isEnabled?<Image source={require('../../img/switchon.png')}  style={{ maxHeight: 18, maxWidth: 35,resizeMode:'cover' }} />:
+                      {this.state.isEnabled?<Image source={require('../../img/switchon.png')}  style={{ maxHeight: 20, maxWidth: 35,resizeMode:'cover' }} />:
                      
-                     <Image source={require('../../img/switchoff.png')} style={{ maxHeight: 18, maxWidth: 35,resizeMode:'cover' }} />}
+                     <Image source={require('../../img/switchoff.png')} style={{ maxHeight: 20, maxWidth: 35,resizeMode:'cover' }} />}
                       </TouchableOpacity>
                      {/* <Icon name='ios-add'  style={{color:'white',fontSize:30,right:10}} onPress={()=>this.props.navigation.navigate('AddEmp')}/> */}
                  <Icon name='md-menu'  style={{color:'white',fontSize:30,right:5,}} onPress={()=>this.props.navigation.navigate('EMenu')}/>
@@ -135,6 +135,7 @@ this.getNotifications()
                  borderWidth:0,borderBottomColor:'#2aabe4'
                 }}
               />
+           
                <Loader visible ={this.state.visible}/> 
               <Modal transparent={true}
        visible={this.state.isVisible}

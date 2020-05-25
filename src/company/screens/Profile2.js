@@ -4,6 +4,7 @@ import { Avatar,Input,Lebal,Button ,CheckBox,Header} from 'react-native-elements
 import TextField from '../../common/components/input'
 import MyButton from '../../common/components/Button'
 import Loader from '../../common/components/Loader'
+import MyModal from '../../common/components/Modal'
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as API from '../../api/index';
 import { Right, Left, Footer,Body,Item} from 'native-base';
@@ -23,6 +24,7 @@ class Profile2 extends React.Component{
             token:'',
             profileData:{},
             visible:false,
+            modalShow:false,
            timing: [
                 { weekdays_id: 1, checked:false, start_time: '00:00',start_display_time: '00:00', end_display_time:'00:00', end_time: '00:00', day: 'Monday' },
                 { weekdays_id: 2, checked:false, start_time: '00:00',start_display_time: '00:00', end_display_time:'00:00', end_time: '00:00', day: 'Tuesday' },
@@ -45,10 +47,18 @@ validateInput = ()=>{
         }
         
         if (field == "start_time") {
+          if(timing[key].checked ===false)
+          {
+            return false
+          }
            timing[key].start_display_time = stateValue;
            timing[key].start_time = this.getTwentyFourHourTime(stateValue);
         }
         if (field == "end_time") {
+          if(timing[key].checked ===false)
+          {
+            return false
+          }
            timing[key].end_display_time = stateValue;
            timing[key].end_time = this.getTwentyFourHourTime(stateValue);
         }
@@ -68,6 +78,7 @@ validateInput = ()=>{
         return format;
         
     }
+
 componentDidMount = async () => {
   let profileData = this.props.navigation.state.params.data
    AsyncStorage.getItem("user_info").then((value) =>{
@@ -96,13 +107,17 @@ componentDidMount = async () => {
      this.setState({visible:true})
       API.submitProfile(data)
        .then(res => {
-         this.setState({visible:false})
-         console.warn('logindetail',res);
-        
+        this.setState({visible:false,modalShow:true})
+        console.warn('Profiledata',res);
+        setTimeout(this.handleClose, 3000)       
       })
   }
 }
 
+handleClose = ()=>{
+  this.setState({modalShow:false})
+  this.props.navigation.navigate('Login')
+}
 
     printAvailability() {
         return this.state.timing.map((item, key) => {
@@ -132,12 +147,10 @@ componentDidMount = async () => {
                             mode="time"
                             is24Hour={true}
                             date={startTime}
-                            //placeholder="HH:MM"
-                            format='hh:mm '
+                            format='HH:mm'
                             confirmBtnText="Confirm"
                             cancelBtnText="Cancel"
-                            
-                            onDateChange={(date) => { this.setAvailability(date, key, 'start_time') }}
+                             onDateChange={(date) => { this.setAvailability(date, key, 'start_time') }}
                             iconComponent={
                                 <Icon
                                     size={0}
@@ -161,8 +174,7 @@ componentDidMount = async () => {
                             mode="time"
                             is24Hour={true}
                             date={endTime}
-                            //placeholder="HH:MM"
-                            format='hh:mm '
+                            format='HH:mm'
                             confirmBtnText="Confirm"
                             cancelBtnText="Cancel"
                             onDateChange={(end_time) => { this.setAvailability(end_time, key, 'end_time') }}
@@ -214,6 +226,7 @@ componentDidMount = async () => {
       <Text></Text>
    <MyButton title="SUBMIT" onPress = {this.profileSubmit}/>
  </View>
+ <MyModal visible = {this.state.modalShow} msg = "Register Successfully"/> 
  </ImageBackground>   
         )}}
 

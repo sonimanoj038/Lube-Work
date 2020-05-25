@@ -177,21 +177,27 @@ if(this.validateInput()){
 <Item  style ={{flexDirection:'row',borderColor: 'transparent',width:'100%',alignItems:'center',PaddingHorizontal:10,justifyContent:'space-evenly'}}>
 
 <View style ={{flexDirection:'column',marginTop:'15%'}}>
-<Avatar
-              size={130}
-              onEditPress={this.takePicture.bind(this)}
-              overlayContainerStyle={{ backgroundColor: '#FFF',borderColor: '#2aabe4', }}          
-              rounded
-              containerStyle={{ borderColor: '#2aabe4', borderWidth: 1, alignSelf: 'center',backgroundColor:'white'}}
-              
-              source={this.state.serverlogo && this.state.clogo.length<1?{uri:"https://lubeatwork.markupdesigns.org/assets/employee/" +this.state.serverlogo}:this.state.clogo.length ===0?require('../../img/profile.png'):{uri:this.state.clogo.uri}}
-                
-              imageProps={{ resizeMode: 'cover' ,borderColor: 'black'}}
-              showEditButton
-              iconStyle = {{backgroundColor:'#2aabe4'}}
-              editButton = {{ name: 'mode-edit', type: 'material', color: '#2aabe4',size:25,containerStyle:{backgroundColor:'white',borderColor:'#2aabe4',borderRadius:12} }}
-            />
-             
+
+         <ImageBackground
+                        source={this.state.serverlogo && this.state.clogo.length<1?{uri:"https://lubeatwork.markupdesigns.org/assets/employee/" +this.state.serverlogo}:this.state.clogo.length ===0?require('../../img/profile.png'):{uri:this.state.clogo.uri}}
+            style={{
+               width: 140, height: 140, 
+            }}
+            imageStyle={{borderRadius: 140/2}}
+        >
+          <TouchableOpacity  style={{ height: 32, width: 32, position: 'absolute',backgroundColor:'white',
+      right: -10,
+      marginBottom:10,
+      alignContent:'center',
+      justifyContent:'center',
+      alignItems:'center',
+      borderRadius:32/2,
+      bottom: 0 }}
+      onPress={this.takePicture.bind(this)}
+      >
+          <Image source={require('../../img/editP.png')} style={{ maxHeight: 23, maxWidth: 23,resizeMode:'cover',padding:5 }} />
+          </TouchableOpacity>
+      </ImageBackground>    
 </View>
 </Item>
   </View>

@@ -4,7 +4,7 @@ import { Avatar,Input,Lebal,Button ,CheckBox,Header} from 'react-native-elements
 import TextField from '../../common/components/input'
 import MyButton from '../../common/components/Button'
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import AsyncStorage from '@react-native-community/async-storage';
 import { Right, Left, Footer,Body,Item} from 'native-base';
 import ImagePicker from 'react-native-image-picker';
 const width = Dimensions.get('window').width;
@@ -44,11 +44,11 @@ const {caddress}  = this.state ;
 const {Vehicles}  = this.state ;
 
 
-if(clogo ===""){
+if(clogo.length<1){
  this.showToastWithGravity("Add Company Logo")
 return false;
 }
-else if(cphoto===""){
+else if(cphoto.length<1){
  this.showToastWithGravity("Add Company Photo")
 return false;
 }
@@ -68,10 +68,18 @@ else if(cemail ===""){
  this.showToastWithGravity("Enter Contact Person Email")
 return false;
 }
+else if (cemail && !this.validateEmail(cemail)) {
+  this.showToastWithGravity('Please enter valid Email ID');
+  return false
+}
 else if( cmobile===""){
  this.showToastWithGravity("Enter Contact Person Phone No.")
 return false;
 }
+else if(cmobile.length!=10){
+  this.showToastWithGravity("Enter Valid Contact Person Phone No.")
+ return false;
+ }
 else if( tin===""){
  this.showToastWithGravity("Enter TIN Number")
 return false;
@@ -147,6 +155,14 @@ return true;
       }
     });
   }
+
+  componentDidMount = async () => {
+    AsyncStorage.getItem("user_info").then((value) =>{
+      const mydata = JSON.parse(value)
+         this.setState({cid:mydata.username})
+
+     })
+ }
   takePicturePhoto() {
     const options = {
       title: 'Select Image',
@@ -172,6 +188,13 @@ return true;
       }
     });
   }
+  validateEmail(email) {
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/.test(email))
+    {
+      return true;
+    }
+    return false;
+  }
     render(){
 
         return(
@@ -195,10 +218,10 @@ return true;
 <Avatar
               size={120}
               onPress={this.takePicture.bind(this)}
-              overlayContainerStyle={{ backgroundColor: '#FFF',borderColor: 'white', borderWidth: 1,borderRadius:20 }}          
-   
-              containerStyle={{ borderColor: 'white', borderWidth: 1, alignSelf: 'center',backgroundColor:'white',borderRadius:20 }}
-              source={this.state.clogo.length <1? require('../../img/cimg.png') :{ uri: this.state.clogo.uri} }
+              overlayContainerStyle={{ borderColor: 'white', borderWidth: 1,backgroundColor:'white',borderRadius:20 }}          
+   placeholderStyle = {{borderColor: 'white', borderWidth: 1,backgroundColor:'white',borderRadius:20}}
+    containerStyle={{ borderColor: 'white', borderWidth: 1,backgroundColor:'red',borderRadius:20 }}
+             source={this.state.clogo.length <1? require('../../img/cimg.png') :{ uri: this.state.clogo.uri} }
               imageProps={{ resizeMode: 'cover' ,borderColor: 'white', borderWidth: 1,borderRadius:20}}
               // showEditButton
               iconStyle = {{backgroundColor:'#2aabe4'}}
@@ -219,6 +242,7 @@ return true;
               // editButton = {{ name: 'mode-edit', type: 'material', color: '#2aabe4',size:25, underlayColor: '#2aabe4',backgroundColor:'#2aabe4',containerStyle:{backgroundColor:'white',paddingRight:-20,position:'absolute'} }}
             />
        
+                 
                    <Text style={{ color: '#FFFFFF', alignSelf: 'center', marginTop: 10, fontFamily: 'Roboto_Regular',fontSize:13 }}>COMPANY PHOTO{}</Text>
 </View>
 </Item>
@@ -228,6 +252,8 @@ return true;
  <Left>
     <Input
       onChangeText={cid => this.setState({cid})}
+      value = {this.state.cid}
+      editable = {false}
       placeholder ='Company ID No'
       inputStyle={{color:'#242424',fontSize:15,fontWeight:'bold',padding: 0}}
       inputContainerStyle = {{borderBottomColor:'#2aabe4',padding: 0}}

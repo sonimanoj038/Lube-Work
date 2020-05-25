@@ -69,7 +69,7 @@ return true;
        this.setState({visible:false})
        if(res.status ==='Success'){
          
-         this.props.navigation.navigate('EnterOTP',{id:res.id})
+         this.props.navigation.navigate('EnterOTP',{id:res.id,email:this.state.email})
        }
        else{
 

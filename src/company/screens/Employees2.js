@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Image, StatusBar ,StyleSheet,ImageBackground,Modal,ToastAndroid,Dimensions,TouchableOpacity,FlatList} from 'react-native';
-import { Avatar,Input,Lebal,Button ,CheckBox,Header} from 'react-native-elements';
+import { View, Image, StatusBar ,StyleSheet,ImageBackground,Modal,ToastAndroid,Dimensions,TouchableOpacity,FlatList,Linking, Alert} from 'react-native';
+import { Avatar,Lebal,Button ,CheckBox,Header,SearchBar} from 'react-native-elements';
 import TextField from '../../common/components/input'
 import MyButton from '../../common/components/Button'
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -8,7 +8,7 @@ import Loader from '../../common/components/Loader'
 import AsyncStorage from '@react-native-community/async-storage';
 import * as API from '../../api/index';
 import DocumentPicker from 'react-native-document-picker';
-import { Right, Left, Footer,Body,Item,Card,CardItem,Text, Thumbnail,List,ListItem} from 'native-base';
+import { Right, Left, Footer,Body,Item,Card,CardItem,Text, Thumbnail,List,ListItem,Input} from 'native-base';
 import ImagePicker from 'react-native-image-picker';
 const width = Dimensions.get('window').width;
 const height =Dimensions.get('window').height;
@@ -26,7 +26,11 @@ class  Employees2 extends React.Component{
           doc1type:'',
           token:'',
           id:'',
-          isFetching: false,
+          isFetching:false,
+          searchShow:false,
+          search:'',
+          FreshDataList:[],
+          url:'http://lubeatwork.markupdesigns.org/assets/boko.csv'
         }   
         
         this.getEmp()
@@ -61,7 +65,7 @@ class  Employees2 extends React.Component{
      .then(res => {
        console.warn('detail',res);
        const final = res['data']
-       this.setState({visible:false,data:final,isFetching:false})
+       this.setState({visible:false,data:final,isFetching:false,FreshDataList:final})
        
     })
 
@@ -81,12 +85,17 @@ getFile =async()=>
     const res = await DocumentPicker.pick({
       type: DocumentPicker.types.allFiles,
     })
-   
+    if(res.name.split(".")[1] ==='csv'){
    console.log(res)
     this.setState({doc1:res.uri,
     doc1name:res.name,doc1type:res.type,visible:true})
 
     await this.UploadEmp()
+    }
+    else{
+      this.showToastWithGravity("Only csv file type is supported ")
+    }
+
   } catch (err) {
     if (DocumentPicker.isCancel(err)) {
       console.warn(err)
@@ -95,6 +104,20 @@ getFile =async()=>
     }
   }
 }
+
+searchFilterFunction = (term) => {
+  //console.log('term:', term)
+  let FreshDataList = [...this.state.FreshDataList]
+  if (term === '') {
+      this.setState({ data:FreshDataList })
+  } else {
+      var term = term.toUpperCase()
+      var filterList = FreshDataList.filter(item => {
+          return item.name.toUpperCase().includes(term)
+      })
+      this.setState({ data: filterList })
+  }
+};
 
   renderSeparator = () => (
     <View
@@ -130,7 +153,7 @@ getFile =async()=>
     if (supported) {
       Linking.openURL(this.state.url);
     } else {
-      console.log("Don't know how to open URI: " + this.props.url);
+     this.showToastWithGravity('Somthing went wrong')
     }
   });
 };
@@ -210,16 +233,38 @@ OpenEmp = (item)=>{
   this.props.navigation.navigate('EditEmp',{data:item})
 }
   
+updateSearch = search => {
+  this.setState({ search });
+};
+
     render(){
         
         return(
              <ImageBackground source = {require('../../img/back3.png')} style = {{flex:1}}>
+                 
+                 {this.state.searchShow?
                  <Header
+                 containerStyle={{
+                  backgroundColor: '#2aabe4',
+                 
+                  width:'100%',
+                  borderWidth:0,borderBottomColor:'#2aabe4'
+                 }}
+                 statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
+                 centerComponent={<Item style = {{width:'100%',borderWidth:0}}>
+                   
+                 <Input placeholder="Search" placeholderTextColor = "white" style = {{color:'white',padding:5}} onChangeText={text => this.searchFilterFunction(text)}/>
+                 <Icon name="md-close" style={{fontSize:25,paddingHorizontal:15,color:'white'}} onPress = {()=>this.setState({searchShow:false})}/>
+             </Item>}
+
+rightContainerStyle = {{width:0}}
+                />
+                :<Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
                 //  leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}}  onPress = {()=>this.props.navigation.goBack()}/>}
                  centerComponent={{ text: 'Employees', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  rightComponent={ <View style = {{flexDirection:'row'}}>
-                      <Icon name='ios-search'  style={{color:'white',fontSize:28,marginHorizontal:5}} />
+                    <Icon name='ios-search'  style={{color:'white',fontSize:28,marginHorizontal:5}}  onPress = {()=>this.setState({searchShow:true})}/>
                      <Icon name='ios-add'  style={{color:'white',fontSize:30,marginHorizontal:5}} onPress={()=>this.props.navigation.navigate('AddEmp')}/>
                  <Icon name='md-menu'  style={{color:'white',fontSize:30,right:5,marginHorizontal:10}} onPress={()=>this.props.navigation.navigate('EMenu')}/>
                  </View>
@@ -229,39 +274,24 @@ OpenEmp = (item)=>{
                  justifyContent: 'space-around',
                  borderWidth:0,borderBottomColor:'#2aabe4'
                 }}
-              />
-               <Loader visible ={this.state.visible}/> 
-               {/* <Modal transparent={true}
-       visible={this.state.isVisible}
-       onRequestClose={this.closeModal}>
-  <View style={{
-          flex: 1,
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
-    <View style={{
-            width: '90%',
-            marginHorizontal:20,
-            height: height/3.5,backgroundColor:'white',justifyContent:'center',borderRadius:7}}>
-      
-      <Text style ={{textAlign:'center',alignItems:'center',alignSelf:'center',fontWeight:'bold',fontSize:25,color:'green'}}>Profile Updated Successfully!</Text>
-    </View>
-  </View>
-</Modal>      */}
-    <View style = {{flex:0.7,alignItems:'center',PaddingHorizontal:10,paddingVertical:30,marginBottom:-50}}>
-    
+              />}
+                 
 
+
+               <Loader visible ={this.state.visible}/> 
+         
+    <View style = {{flex:0.7,PaddingHorizontal:10,paddingVertical:30,marginBottom:-50}}>
 
   </View>
   <View style = {{flex:4,backgroundColor:'white',borderWidth:0.5,borderColor:'grey',opacity:0.8}}>
   <FlatList
           data={this.state.data}
-        showsHorizontalScrollIndicator ={false}
-        onRefresh={() => this.onRefresh()}
-        refreshing={this.state.isFetching}
-        showsVerticalScrollIndicator = {false}
-        ItemSeparatorComponent={this.renderSeparator}
-          renderItem={({ item }) => (
+         showsHorizontalScrollIndicator ={false}
+         onRefresh={() => this.onRefresh()}
+         refreshing={this.state.isFetching}
+         showsVerticalScrollIndicator = {false}
+         ItemSeparatorComponent={this.renderSeparator}
+         renderItem={({ item }) => (
             <List >
             <ListItem noBorder avatar>
               <Left>

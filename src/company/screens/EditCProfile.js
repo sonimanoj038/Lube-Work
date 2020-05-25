@@ -49,7 +49,6 @@ const {cperson}  = this.state ;
 const {caddress}  = this.state ;
 const {Vehicles}  = this.state ;
 
-
 if(clogo ===""){
  this.showToastWithGravity("Add Company Logo")
 return false;
@@ -138,7 +137,6 @@ return true;
         path: 'images',
       },
     };
-
     ImagePicker.showImagePicker(options, (response) => {
       console.log('Response = ', response);
 
@@ -247,7 +245,7 @@ if(this.state.visible){
               overlayContainerStyle={{ borderColor: 'white', borderWidth: 1,backgroundColor:'white',borderRadius:20 }}          
    placeholderStyle = {{borderColor: 'white', borderWidth: 1,backgroundColor:'white',borderRadius:20}}
     containerStyle={{ borderColor: 'white', borderWidth: 1,backgroundColor:'red',borderRadius:20 }}
-     source={this.state.clogo.length<1? {uri:"https://lubeatwork.markupdesigns.org/"+this.state.serverlogo}:{ uri: this.state.clogo.uri} } imageProps={{ resizeMode: 'cover' ,borderColor: 'white', borderWidth: 1,borderRadius:20}}
+     source={this.state.clogo.length<1? {uri:"https://lubeatwork.markupdesigns.org/assets/company/"+this.state.serverlogo}:{ uri: this.state.clogo.uri} } imageProps={{ resizeMode: 'cover' ,borderColor: 'white', borderWidth: 1,borderRadius:20}}
 
               imageProps={{ resizeMode: 'cover' ,borderColor: 'white', borderWidth: 1,borderRadius:20}}
               // showEditButton

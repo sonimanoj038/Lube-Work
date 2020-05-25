@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Image, StatusBar ,StyleSheet,ImageBackground,Modal,ToastAndroid,Dimensions,TouchableOpacity,FlatList} from 'react-native';
-import { Avatar,Input,Lebal,Button ,CheckBox,Header} from 'react-native-elements';
+import { Avatar,Lebal,Button ,CheckBox,Header} from 'react-native-elements';
 import TextField from '../../common/components/input'
 import MyButton from '../../common/components/Button'
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import * as API from '../../api/index';
 import DocumentPicker from 'react-native-document-picker';
 import LinearGradient from 'react-native-linear-gradient';
-import { Right, Left, Footer,Body,Item,Card,CardItem,Text, Thumbnail,List,ListItem} from 'native-base';
+import { Right, Left, Footer,Body,Item,Card,CardItem,Text, Thumbnail,List,ListItem,Input} from 'native-base';
 import ImagePicker from 'react-native-image-picker';
 const width = Dimensions.get('window').width;
 const height =Dimensions.get('window').height;
@@ -29,6 +29,7 @@ class  Archive extends React.Component{
           token:'',
           id:'',
           isVisible:false,
+          searchShow:false,
           visible2:false
         }     
     }
@@ -59,13 +60,14 @@ class  Archive extends React.Component{
      .then(res => {
        console.warn('detail',res);
        const final = res['data']
-       this.setState({visible:false,data:final}) 
+       this.setState({visible:false,data:final,FreshDataList:final}) 
     })
 }
 componentDidMount = async () => {
    AsyncStorage.getItem("user_info").then((value) =>{
      const mydata = JSON.parse(value)
         this.setState({id:mydata.id,token:mydata.token})
+        
 this.getArchive()
     })
 }
@@ -102,7 +104,20 @@ const mydata = this.state.Empdata
   openDetails = (item)=>{  
 this.setState({isVisible:true,Empdata:item}) 
 }
-   
+searchFilterFunction = (term) => {
+  //console.log('term:', term)
+  let FreshDataList = [...this.state.FreshDataList]
+  if (term === '') {
+      this.setState({ data:FreshDataList })
+  } else {
+      var term = term.toUpperCase()
+      var filterList = FreshDataList.filter(item => {
+          return item.name.toUpperCase().includes(term)
+      })
+      this.setState({ data: filterList })
+  }
+};
+ 
   
     render(){
       if(this.state.visible){
@@ -111,12 +126,32 @@ this.setState({isVisible:true,Empdata:item})
       }
         return(
              <ImageBackground source = {require('../../img/back3.png')} style = {{flex:1}}>
+                
+                {this.state.searchShow?
+                 <Header
+                 containerStyle={{
+                  backgroundColor: '#2aabe4',
+                 
+                  width:'100%',
+                  borderWidth:0,borderBottomColor:'#2aabe4'
+                 }}
+                 statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
+                 centerComponent={<Item style = {{width:'100%',borderWidth:0}}>
+                   
+                 <Input placeholder="Search" placeholderTextColor = "white" style = {{color:'white',padding:5}} onChangeText={text => this.searchFilterFunction(text)}/>
+                 <Icon name="md-close" style={{fontSize:25,paddingHorizontal:15,color:'white'}} onPress = {()=>this.setState({searchShow:false})}/>
+             </Item>}
+
+rightContainerStyle = {{width:0}}
+                />
+                :
+                
                  <Header
                  statusBarProps={{ barStyle: 'light-content' ,backgroundColor:"#2aabe4",translucent: true,}}
                 //  leftComponent={ <Icon name='ios-arrow-back'  style={{color:'white',fontSize:25,left:5}} onPress = {()=>this.props.navigation.goBack()}/>}
                  centerComponent={{ text: 'Archive', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  rightComponent={ <View style = {{flexDirection:'row'}}>
-                      <Icon name='ios-search'  style={{color:'white',fontSize:28,marginHorizontal:15}} />
+                      <Icon name='ios-search'  style={{color:'white',fontSize:28,marginHorizontal:15}}  onPress = {()=>this.setState({searchShow:true})}/>
                      {/* <Icon name='ios-add'  style={{color:'white',fontSize:30,right:10}} onPress={()=>this.props.navigation.navigate('AddEmp')}/> */}
                  <Icon name='md-menu'  style={{color:'white',fontSize:30,right:5}} onPress={()=>this.props.navigation.navigate('EMenu')}/>
                  </View>
@@ -126,7 +161,7 @@ this.setState({isVisible:true,Empdata:item})
                  justifyContent: 'space-around',
                  borderWidth:0,borderBottomColor:'#2aabe4'
                 }}
-              />
+              />}
                <Loader visible ={this.state.visible}/> 
                <Loader visible ={this.state.visible2}/> 
               <Modal transparent={true}

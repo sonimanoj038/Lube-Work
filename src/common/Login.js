@@ -20,9 +20,8 @@ class Login extends React.Component{
           passError:'',
           user:'',
           password:'',
-          checked:true,
-          visible:false,
           checked:false,
+          visible:false,
           disabled:false
         }     
     }
@@ -79,7 +78,7 @@ return true;
        .then(res => {
         console.warn("my final " + JSON.stringify(res) );
          
-         this.setState({visible:false})
+         this.setState({visible:false, disabled:false})
 
      
         if(res.error===undefined){
@@ -130,7 +129,10 @@ console.warn("fsdfdsf" + res.avatar)
 }
 
 rememberPassword =async ()=>{
-  if(this.validateInput()){
+  if(this.state.user ==="" && this.state.password ===""){
+    this.showToastWithGravity("Fill the details")
+    return false}
+    else{
   await this.setState({checked:!this.state.checked})
   if(this.state.checked){
   
@@ -143,6 +145,7 @@ let data = {user:this.state.user,pass:this.state.password,visible:this.state.che
     await AsyncStorage.removeItem('userSave');
   }
 }
+
 }
 
     render(){

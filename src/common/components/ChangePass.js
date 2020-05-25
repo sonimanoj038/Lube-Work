@@ -113,9 +113,7 @@ console.warn(mydata.id)
          else{
           this.setState({visible:false})
           this.showToastWithGravity(res.msg) 
-         }
-         
-      })
+         }})
   }}
   handleClose = ()=>{
     this.setState({modalShow:false})

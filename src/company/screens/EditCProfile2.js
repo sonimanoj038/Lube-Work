@@ -35,8 +35,6 @@ return true
 }
   setAvailability(stateValue, key, field) {
     var timing = [...this.state.timing];
-  
-    console.log(stateValue)
         
         if (field == "day") {
          
@@ -115,11 +113,12 @@ getTwentyFourHourTime(amPmString) {
             var startTime = this.state.timing[key].start_display_time;
             var endTime = this.state.timing[key].end_display_time;
             return (
+
                 <View key={key} style={[{flex:1,backgroundColor: '#fff',padding:5},styles.twoRow]}>
                    <View style={styles.threeRow}>
                         <CheckBox
-                            containerStyle={{padding:0,borderWidth:0,marginHorizontal:0,}}
-                            textStyle={{fontWeight:'normal',padding:0,fontSize:12}}
+                            containerStyle={{padding:0,borderWidth:0,marginHorizontal:0,backgroundColor:'transparent'}}
+                            textStyle={{fontWeight:'normal',padding:0,fontSize:11}}
                             title={item.day}
                             checked={checkStatus}
                             uncheckedColor = "black"
@@ -136,13 +135,11 @@ getTwentyFourHourTime(amPmString) {
                             mode="time"
                             is24Hour={true}
                             date={startTime}
-                            
-                            //placeholder="HH:MM"
                             format='HH:mm'
                             confirmBtnText="Confirm"
                             cancelBtnText="Cancel"
                             local = "en_GB"
-                            onDateChange={(date) => { this.setAvailability(date, key, 'start_time') }}
+                            onDateChange={(date) =>{this.setAvailability(date, key, 'start_time') }}
                             iconComponent={
                                 <Icon
                                     size={0}
@@ -158,7 +155,7 @@ getTwentyFourHourTime(amPmString) {
                         />
                    </View>
                    <View style={{justifyContent:'center',alignItems:'center'}}>
-                    <Text style={styles.equal}>TO</Text>
+                    <Text style={{fontSize:12}}>TO</Text>
                    </View>
                    <View>
                         <DatePicker
@@ -200,7 +197,7 @@ getTwentyFourHourTime(amPmString) {
                  centerComponent={{ text: 'Edit Your Profile', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  rightComponent={ <View style = {{flexDirection:'row'}}>
                      {/* <Icon name='ios-create'  style={{color:'white',fontSize:25,marginHorizontal:5}}/> */}
-                 <Icon name='md-menu'  style={{color:'white',fontSize:25,right:10}}/>
+                 <Icon name='md-menu'  style={{color:'white',fontSize:25,right:10}} onPress={()=>this.props.navigation.navigate('EMenu')}/>
                  </View>
                 }
                  containerStyle={{
@@ -282,7 +279,7 @@ const styles = StyleSheet.create({
         borderWidth:0,
       },
       dateText:{
-          
+         fontSize:12 
       },
       dateIcon: {
         position:'absolute',

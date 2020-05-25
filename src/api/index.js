@@ -1,4 +1,3 @@
-import { cos } from "react-native-reanimated";
 
 const BaseUrl = 'https://lubeatwork.markupdesigns.org/api/';
 
@@ -41,7 +40,7 @@ export const changePassword= (data) => {
 
 export const submitProfile= (data) => {
     let formdata = new FormData();
-    formdata.append("timing",JSON.stringify(timing))
+    formdata.append("timing",JSON.stringify(data.timing))
     formdata.append("id",data.id);
     formdata.append("companyname",data.cname);
     formdata.append("contactemail",data.cemail);

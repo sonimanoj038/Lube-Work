@@ -72,12 +72,15 @@ getFile =async()=>
     const res = await DocumentPicker.pick({
       type: DocumentPicker.types.allFiles,
     })
-   
+    if(res.name.split(".")[1] ==='csv'){
    console.log(res)
     this.setState({doc1:res.uri,
     doc1name:res.name,doc1type:res.type,visible:true})
-
     await this.UploadEmp()
+    }
+    else{
+      this.showToastWithGravity("Only csv file type is supported ")
+    }
   } catch (err) {
     if (DocumentPicker.isCancel(err)) {
       console.warn(err)
@@ -87,6 +90,7 @@ getFile =async()=>
   }
 }
 UploadEmp = ()=>{
+  
      const mydata = this.state
      const data = { 
         id:mydata.id,
@@ -97,17 +101,16 @@ UploadEmp = ()=>{
         }
     API.UploadEmp(data)
      .then(res => {
-       console.warn('detail',res);
+       console.warn('detailsdfd',res);
        this.setState({visible:false})
        if(res.status ==='Success'){
          this.setState({isVisible:false})
       this.props.navigation.navigate('Employees2')
        }
     })
-
 }
+
 componentDidMount = async () => {
- 
    AsyncStorage.getItem("user_info").then((value) =>{
      const mydata = JSON.parse(value)
         this.setState({id:mydata.id,token:mydata.token})
@@ -159,7 +162,7 @@ getSample = () => {
                  centerComponent={{ text: 'Employees', style: { color: '#fff',fontWeight:'bold',fontSize:20 } }}
                  rightComponent={ <View style = {{flexDirection:'row'}}>
                      <Icon name='ios-add'  style={{color:'white',fontSize:30,marginHorizontal:15}} onPress={()=>this.props.navigation.navigate('Employees2')}/>
-                 <Icon name='md-menu'  style={{color:'white',fontSize:30,}} onPress={()=>this.props.navigation.navigate('EMenu')}/>
+                 <Icon name='md-menu'  style={{color:'white',fontSize:30,right:8}} onPress={()=>this.props.navigation.navigate('EMenu')}/>
                  </View>
                 }
                  containerStyle={{

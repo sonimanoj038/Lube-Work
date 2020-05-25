@@ -18,7 +18,8 @@ class EnterOTP extends React.Component{
             otp:null,
           visible:false,
           token:'',
-          id:''
+          id:'',
+          email:''
         }     
     }
 validateInput = ()=>{
@@ -48,13 +49,35 @@ return true;
   };
  
   componentDidMount = async () => {
- 
+   const email = this.props.navigation.state.params.email
     AsyncStorage.getItem("user_info").then((value) =>{
       const mydata = JSON.parse(value)
-         this.setState({id:mydata.id,token:mydata.token})
+         this.setState({id:mydata.id,token:mydata.token,email:email})
  console.warn(mydata.id)
      })
  }
+
+ReSendOTP = ()=>{
+  this.setState({visible:true})
+    const mydata = this.state
+     const data = { 
+        email:mydata.email,
+        token:mydata.token
+        }
+    API.ForgotPassword(data)
+     .then(res => {
+       console.warn('logindetail',res);
+       this.setState({visible:false})
+       if(res.status ==='Success'){
+         
+        this.showToastWithGravity('New OTP has been sent')
+       }
+       else{
+
+        this.showToastWithGravity('Something went wrong/Invalid Email')
+       }
+    })
+}
 
   VerifyOtp=()=>{
     if(this.validateInput()){
@@ -101,7 +124,9 @@ placeholder ='ENTER OTP'
 secureTextEntry={true}
 keyboardType="numeric" maxLength={5}
 rightIcon = {
+  <TouchableOpacity onPress = {this.ReSendOTP}>
     <Text style = {{color:'#2aabe4',fontWeight:'bold',}}>RESEND?</Text>
+    </TouchableOpacity>
 }
    />
    <Text></Text>

@@ -63,6 +63,7 @@ else if(item.id ==='4'){
 }
 else if(item.id ==='5'){
   this.setState({isVisible:true})
+
  
 }
    }
@@ -84,11 +85,19 @@ else if(item.id ==='5'){
 }
 componentDidMount = async () => {
  
-   AsyncStorage.getItem("user_info").then((value) =>{
+   await AsyncStorage.getItem("user_info").then((value) =>{
      const mydata = JSON.parse(value)
-        this.setState({id:mydata.id,token:mydata.token,avatar:mydata.avatar,noEmp:mydata.noEmp})
-console.warn("dad" + mydata.avatar)
-    })
+        this.setState({id:mydata.id,token:mydata.token,noEmp:mydata.noEmp})
+        const  data = {id:mydata.id,token:mydata.token}
+API.EditCProfile(data)
+.then(res => {
+  console.warn("data"+res)
+   if (res.success ===true) {
+    let response = res['data']
+    console.warn(response.avatar)   
+  this.setState({visible:false,avatar:response.avatar})
+   }
+   })})
 }
   
     render(){
@@ -152,7 +161,7 @@ const data = [{"id":"1","path":require('../../img/Employees.png'),"name":'Employ
     <View style = {{flex:1,alignItems:'center',PaddingHorizontal:10,paddingVertical:30,marginBottom:-50}}>
 <Item  style ={{flexDirection:'row',borderColor: 'transparent',width:'100%',alignItems:'center',PaddingHorizontal:10,justifyContent:'space-evenly'}}>
 <View style ={{flexDirection:'column',marginTop:'0.5%'}}>
-<Avatar
+{/* <Avatar
               size={130}
               onEditPress={()=> this.props.navigation.navigate('EditCProfile')}
               overlayContainerStyle={{ backgroundColor: '#FFF',borderColor: '#2aabe4', }}          
@@ -164,7 +173,29 @@ const data = [{"id":"1","path":require('../../img/Employees.png'),"name":'Employ
               showEditButton
               iconStyle = {{backgroundColor:'#2aabe4'}}
               editButton = {{ name: 'mode-edit', type: 'material', color: '#2aabe4',size:25,containerStyle:{backgroundColor:'white',borderColor:'#2aabe4',borderRadius:12} }}
-            />
+            /> */}
+    
+        <ImageBackground
+             source={this.state.avatar != '' ? { uri:"https://lubeatwork.markupdesigns.org/assets/company/"+this.state.avatar} : require('../../img/profile.png')}
+            style={{
+               width: 140, height: 140, 
+            }}
+            imageStyle={{borderRadius: 140/2}}
+        >
+          <TouchableOpacity  style={{ height: 32, width: 32, position: 'absolute',backgroundColor:'white',
+      right: -15,
+      marginBottom:140/4,
+      alignContent:'center',
+      justifyContent:'center',
+      alignItems:'center',
+      borderRadius:32/2,
+      bottom: 0 }}
+      onPress={()=> this.props.navigation.navigate('EditCProfile')}
+      >
+          <Image source={require('../../img/editP.png')} style={{ maxHeight: 23, maxWidth: 23,resizeMode:'cover',padding:5 }} />
+          </TouchableOpacity>
+        
+      </ImageBackground>
              
 </View>
 </Item>
@@ -238,6 +269,10 @@ const styles = StyleSheet.create({
        backgroundColor: 'transparent' 
      
      },
+     icon: {
+      backgroundColor: '#ccc',
+     
+     }
 
   });
 export default EMenu;
